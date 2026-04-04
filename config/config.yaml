@@ -1,0 +1,92 @@
+# Data paths
+data:
+  mimic_notes_path: "data/discharge.csv"
+  mimic_admissions_path: "data/admissions.csv"
+  mimic_patients_path: "data/patients.csv"
+  synthetic_notes_path: "data/synthetic_discharge.csv"
+  synthetic_admissions_path: "data/synthetic_admissions.csv"
+  synthetic_patients_path: "data/synthetic_patients.csv"
+  sample_size: 50000
+  random_seed: 42
+
+# Preprocessing
+preprocessing:
+  min_note_length: 100
+  max_note_length: 50000
+  remove_sections:
+    - "Discharge Medications"
+    - "Discharge Disposition"
+    - "Discharge Diagnosis"
+    - "Discharge Condition"
+  custom_stopwords:
+    - "patient"
+    - "pt"
+    - "history"
+    - "mg"
+    - "ml"
+    - "dr"
+    - "hospital"
+    - "admission"
+    - "discharge"
+    - "date"
+
+# Topic Modeling
+topic_modeling:
+  lda:
+    num_topics: [5, 10, 15, 20]
+    passes: 15
+    iterations: 100
+    chunksize: 2000
+    eval_every: null
+    alpha: "auto"
+    eta: "auto"
+    best_num_topics: null
+  bertopic:
+    embedding_model: "dmis-lab/biobert-base-cased-v1.2"
+    min_topic_size: 50
+    nr_topics: "auto"
+    top_n_words: 15
+    umap_n_neighbors: 15
+    umap_n_components: 5
+    umap_min_dist: 0.0
+    hdbscan_min_cluster_size: 50
+
+# Prediction
+prediction:
+  target: "readmission_30day"
+  test_size: 0.2
+  val_size: 0.1
+  models:
+    - "logistic_regression"
+    - "random_forest"
+    - "xgboost"
+    - "lightgbm"
+  feature_types:
+    - "tfidf"
+    - "topic_distribution"
+    - "structured"
+    - "combined"
+  tfidf:
+    max_features: 5000
+    ngram_range: [1, 2]
+    min_df: 5
+    max_df: 0.95
+
+# Fairness
+fairness:
+  protected_attributes:
+    - "gender"
+    - "insurance"
+    - "age_group"
+  metrics:
+    - "demographic_parity_difference"
+    - "equalized_odds_difference"
+    - "false_positive_rate_difference"
+    - "false_negative_rate_difference"
+
+# Visualization
+visualization:
+  figure_dpi: 300
+  figure_format: "png"
+  color_palette: "Set2"
+  save_path: "results/figures/"
