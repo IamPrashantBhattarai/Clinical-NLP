@@ -418,9 +418,34 @@ def build_preprocessing_pipeline(
     logger.info("Filtered %d notes outside length bounds — %d remaining", before - len(df), len(df))
 
     logger.info("Step 3/4 — tokenizing %d notes (use_scispacy=%s) ...", len(df), use_scispacy)
-    df["tokens"] = df["cleaned_text"].apply(
-        lambda t: tokenize_clinical(t, use_scispacy=use_scispacy, extra_stopwords=extra_stopwords)
-    )
+    _ensure_nltk()
+    from nltk.corpus import stopwords as nltk_stopwords
+    stop_words = set(nltk_stopwords.words("english"))
+    stop_words |= DEFAULT_MEDICAL_STOPWORDS
+    if extra_stopwords:
+        stop_words |= set(extra_stopwords)
+
+    if _spacy_available():
+        nlp = _get_spacy(use_scispacy=use_scispacy)
+        disabled = [p for p in ["parser", "ner"] if p in nlp.pipe_names]
+        texts = df["cleaned_text"].tolist()
+        all_tokens = []
+        for doc in nlp.pipe(texts, batch_size=64, disable=disabled):
+            tokens = []
+            for tok in doc:
+                lemma = tok.lemma_.lower().strip()
+                if (tok.is_stop or tok.is_punct or tok.is_space
+                        or len(lemma) <= 1 or lemma in stop_words
+                        or _RE_PURE_NUMBER.match(lemma)
+                        or lemma in string.punctuation):
+                    continue
+                tokens.append(lemma)
+            all_tokens.append(tokens)
+        df["tokens"] = all_tokens
+    else:
+        df["tokens"] = df["cleaned_text"].apply(
+            lambda t: tokenize_clinical(t, use_scispacy=use_scispacy, extra_stopwords=extra_stopwords)
+        )
 
     if use_phrases:
         logger.info("Step 4/4 — detecting bigrams/trigrams ...")
