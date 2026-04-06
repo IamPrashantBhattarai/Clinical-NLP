@@ -8,8 +8,10 @@ Reports: accuracy, precision, recall, F1, ROC-AUC, PR-AUC per feature set.
 """
 
 import logging
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import joblib
 import numpy as np
 import pandas as pd
 from scipy.sparse import issparse
@@ -388,7 +390,57 @@ def get_feature_importance(
 
 
 # ---------------------------------------------------------------------------
-# 8. Find optimal threshold
+# 8. Save / load models
+# ---------------------------------------------------------------------------
+
+def save_models(
+    models: Dict[tuple, object],
+    best: dict,
+    output_dir: str = "results/models",
+) -> List[str]:
+    """
+    Persist trained models to disk using joblib.
+
+    Saves all models and marks the best one with a '_BEST' suffix.
+
+    Parameters
+    ----------
+    models : dict
+        {(model_name, feature_type): fitted_model} from run_prediction_pipeline.
+    best : dict
+        Best model info dict from run_prediction_pipeline.
+    output_dir : str
+        Directory to save models to.
+
+    Returns
+    -------
+    list of str — saved file paths.
+    """
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    saved = []
+
+    best_key = (best.get("model"), best.get("feature_type"))
+
+    for (model_name, feat_type), model in models.items():
+        suffix = "_BEST" if (model_name, feat_type) == best_key else ""
+        filename = f"{model_name}__{feat_type}{suffix}.joblib"
+        filepath = out / filename
+        joblib.dump(model, filepath)
+        saved.append(str(filepath))
+        logger.info("Saved model: %s", filepath)
+
+    logger.info("Saved %d models to %s", len(saved), out)
+    return saved
+
+
+def load_model(filepath: str):
+    """Load a saved model from disk."""
+    return joblib.load(filepath)
+
+
+# ---------------------------------------------------------------------------
+# 9. Find optimal threshold
 # ---------------------------------------------------------------------------
 
 def find_optimal_threshold(
@@ -582,6 +634,10 @@ def run_prediction_pipeline(
         display_cols = ["model", "feature_type", "accuracy", "precision", "recall", "f1", "roc_auc", "pr_auc"]
         logger.info("\n%s", results_df[display_cols].to_string(index=False))
 
+    # Save all trained models to disk
+    save_dir = cfg.get("prediction", {}).get("model_save_path", "results/models")
+    saved_paths = save_models(all_models, best, output_dir=save_dir)
+
     return {
         "results": all_results,
         "models": all_models,
@@ -590,4 +646,5 @@ def run_prediction_pipeline(
         "cv_results": all_cv,
         "importances": all_importances,
         "results_df": results_df,
+        "saved_model_paths": saved_paths,
     }
