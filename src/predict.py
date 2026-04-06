@@ -128,24 +128,24 @@ def get_model(name: str, random_seed: int = 42):
             penalty="l2",
             C=1.0,
             random_state=random_seed,
-            n_jobs=-1,
+            n_jobs=1,
         )
 
     elif name == "random_forest":
         from sklearn.ensemble import RandomForestClassifier
         return RandomForestClassifier(
-            n_estimators=300,
+            n_estimators=200,
             max_depth=None,
             min_samples_leaf=5,
             class_weight="balanced",
             random_state=random_seed,
-            n_jobs=-1,
+            n_jobs=1,
         )
 
     elif name == "xgboost":
         from xgboost import XGBClassifier
         return XGBClassifier(
-            n_estimators=300,
+            n_estimators=200,
             max_depth=6,
             learning_rate=0.1,
             subsample=0.8,
@@ -154,13 +154,13 @@ def get_model(name: str, random_seed: int = 42):
             eval_metric="logloss",
             use_label_encoder=False,
             random_state=random_seed,
-            n_jobs=-1,
+            n_jobs=1,
         )
 
     elif name == "lightgbm":
         from lightgbm import LGBMClassifier
         return LGBMClassifier(
-            n_estimators=300,
+            n_estimators=200,
             max_depth=-1,
             learning_rate=0.1,
             num_leaves=31,
@@ -168,7 +168,7 @@ def get_model(name: str, random_seed: int = 42):
             colsample_bytree=0.8,
             is_unbalance=True,
             random_state=random_seed,
-            n_jobs=-1,
+            n_jobs=1,
             verbose=-1,
         )
 

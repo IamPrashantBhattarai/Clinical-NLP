@@ -24,14 +24,10 @@ def _get_spacy(use_scispacy: bool = False):
     global _spacy_model
     if _spacy_model is None:
         try:
-            if use_scispacy:
-                import spacy
-                _spacy_model = spacy.load("en_core_sci_sm")
-                logger.info("Loaded scispacy model: en_core_sci_sm")
-            else:
-                import spacy
-                _spacy_model = spacy.load("en_core_web_sm")
-                logger.info("Loaded spacy model: en_core_web_sm")
+            import spacy
+            model_name = "en_core_sci_sm" if use_scispacy else "en_core_web_sm"
+            _spacy_model = spacy.load(model_name, disable=["parser", "ner"])
+            logger.info("Loaded spacy model: %s (parser/ner disabled)", model_name)
         except OSError as e:
             raise OSError(
                 f"spaCy model not found. Run: python -m spacy download en_core_web_sm\n{e}"
@@ -427,10 +423,9 @@ def build_preprocessing_pipeline(
 
     if _spacy_available():
         nlp = _get_spacy(use_scispacy=use_scispacy)
-        disabled = [p for p in ["parser", "ner"] if p in nlp.pipe_names]
         texts = df["cleaned_text"].tolist()
         all_tokens = []
-        for doc in nlp.pipe(texts, batch_size=64, disable=disabled):
+        for doc in nlp.pipe(texts, batch_size=64):
             tokens = []
             for tok in doc:
                 lemma = tok.lemma_.lower().strip()
