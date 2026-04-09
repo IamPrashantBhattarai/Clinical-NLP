@@ -51,6 +51,17 @@ topic_modeling:
     umap_min_dist: 0.0
     hdbscan_min_cluster_size: 50
 
+# Clinical Embeddings
+embeddings:
+  model_name: "clinicalbert"        # clinicalbert, biobert, pubmedbert, bert, or HuggingFace ID
+  pooling: "mean"                   # mean (recommended) or cls
+  max_length: 512                   # BERT max token length per chunk
+  stride: 256                       # overlap between chunks for long notes
+  reduce_dims: true                 # reduce embedding dimensions with PCA
+  n_components: 50                  # target dimensions after reduction
+  reduction_method: "pca"           # pca or umap
+  device: null                      # null = auto-detect (cuda if available, else cpu)
+
 # Prediction
 prediction:
   target: "readmission_30day"
@@ -65,6 +76,7 @@ prediction:
     - "tfidf"
     - "topic_distribution"
     - "structured"
+    - "embeddings"
     - "combined"
   tfidf:
     max_features: 5000

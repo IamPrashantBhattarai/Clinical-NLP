@@ -9,6 +9,7 @@ nltk>=3.8
 spacy>=3.5
 transformers>=4.30.0
 tokenizers>=0.13.0
+torch>=2.0.0
 
 # Topic Modeling
 gensim>=4.3.0

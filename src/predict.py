@@ -535,6 +535,7 @@ def run_prediction_pipeline(
         "structured": "structured",
         "combined": "combined",
         "text_stats": "text_stats",
+        "embeddings": "embeddings",
     }
 
     all_results = []
