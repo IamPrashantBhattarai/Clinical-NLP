@@ -504,6 +504,147 @@ def plot_fairness_group_metrics(
 
 
 # =========================================================================
+# 4.5 SHAP Explainability Plots
+# =========================================================================
+
+def plot_shap_global_importance(
+    global_importance: pd.DataFrame,
+    model_name: str = "",
+    feature_type: str = "",
+    top_n: int = 20,
+    config: Optional[dict] = None,
+) -> str:
+    """
+    Horizontal bar chart of global SHAP feature importance.
+
+    Parameters
+    ----------
+    global_importance : pd.DataFrame
+        Output of explainability.shap_global_importance(); columns
+        ['feature', 'mean_abs_shap', 'mean_shap'].
+    """
+    _setup_style(config)
+
+    df = global_importance.head(top_n).iloc[::-1]  # reverse for horizontal layout
+    colors = ["#d62728" if v > 0 else "#1f77b4" for v in df["mean_shap"]]
+
+    fig, ax = plt.subplots(figsize=(9, max(4, 0.35 * len(df))))
+    ax.barh(df["feature"], df["mean_abs_shap"], color=colors, edgecolor="black", alpha=0.85)
+    ax.set_xlabel("Mean |SHAP value|  (impact on model output)")
+    ax.set_title(
+        f"SHAP Global Feature Importance — {model_name} ({feature_type})",
+        fontsize=12, fontweight="bold",
+    )
+
+    # Legend for direction
+    from matplotlib.patches import Patch
+    legend_elems = [
+        Patch(facecolor="#d62728", edgecolor="black", label="Increases readmission risk"),
+        Patch(facecolor="#1f77b4", edgecolor="black", label="Decreases readmission risk"),
+    ]
+    ax.legend(handles=legend_elems, loc="lower right", fontsize=9)
+
+    plt.tight_layout()
+    return _save_fig(fig, "shap_global_importance", config)
+
+
+def plot_shap_summary(
+    shap_values: np.ndarray,
+    X: np.ndarray,
+    feature_names: List[str],
+    model_name: str = "",
+    feature_type: str = "",
+    top_n: int = 20,
+    config: Optional[dict] = None,
+) -> str:
+    """
+    SHAP summary (beeswarm) plot showing per-sample feature impact.
+
+    Uses shap's built-in summary_plot for the canonical visualization.
+    """
+    _setup_style(config)
+
+    try:
+        import shap
+    except ImportError:
+        logger.warning("shap not installed — skipping summary plot.")
+        return ""
+
+    # Truncate to top_n features by mean abs SHAP for readability
+    n_feat = min(shap_values.shape[1], len(feature_names))
+    mean_abs = np.abs(shap_values[:, :n_feat]).mean(axis=0)
+    top_idx = np.argsort(-mean_abs)[:top_n]
+
+    sv = shap_values[:, top_idx]
+    Xv = X[:, top_idx]
+    names = [feature_names[i] for i in top_idx]
+
+    fig = plt.figure(figsize=(9, max(5, 0.35 * top_n)))
+    shap.summary_plot(
+        sv, Xv,
+        feature_names=names,
+        show=False,
+        plot_size=None,
+    )
+    plt.title(
+        f"SHAP Summary — {model_name} ({feature_type})",
+        fontsize=12, fontweight="bold",
+    )
+    plt.tight_layout()
+    return _save_fig(plt.gcf(), "shap_summary", config)
+
+
+def plot_shap_patient_explanation(
+    patient_example: dict,
+    model_name: str = "",
+    feature_type: str = "",
+    config: Optional[dict] = None,
+    suffix: str = "",
+) -> str:
+    """
+    Waterfall-style plot showing how each top feature contributes to a single
+    patient's predicted readmission risk.
+
+    Parameters
+    ----------
+    patient_example : dict
+        Output of explainability.explain_patient().
+    """
+    _setup_style(config)
+
+    df = patient_example["top_features"].iloc[::-1]  # reverse for visual order
+    colors = ["#d62728" if s > 0 else "#1f77b4" for s in df["shap"]]
+
+    fig, ax = plt.subplots(figsize=(9, max(4, 0.4 * len(df))))
+    ax.barh(df["feature"], df["shap"], color=colors, edgecolor="black", alpha=0.85)
+    ax.axvline(0, color="black", linewidth=0.8)
+    ax.set_xlabel("SHAP value (impact on prediction)")
+
+    base = patient_example["base_value"]
+    pred = patient_example["predicted_logit"]
+    pid = patient_example["patient_idx"]
+    ax.set_title(
+        f"Patient #{pid} Explanation — {model_name} ({feature_type})\n"
+        f"Base: {base:.3f}  →  Prediction: {pred:.3f}",
+        fontsize=11, fontweight="bold",
+    )
+
+    # Annotate values
+    for i, (feat, shap_val, val) in enumerate(zip(df["feature"], df["shap"], df["value"])):
+        ax.text(
+            shap_val, i,
+            f"  val={val:.2f}",
+            va="center",
+            fontsize=8,
+            color="black",
+        )
+
+    plt.tight_layout()
+    name = f"shap_patient_{pid}{suffix}"
+    return _save_fig(fig, name, config)
+
+
+# =========================================================================
 # 5. Generate all figures
 # =========================================================================
 
@@ -512,6 +653,7 @@ def generate_all_figures(
     prediction_results: Optional[dict] = None,
     lda_results: Optional[dict] = None,
     fairness_results: Optional[dict] = None,
+    shap_results: Optional[dict] = None,
     config: Optional[dict] = None,
 ) -> List[str]:
     """
@@ -578,6 +720,29 @@ def generate_all_figures(
         importances = prediction_results.get("importances", {})
         if importances:
             saved.append(plot_feature_importance(importances, config=config))
+
+    # SHAP explainability
+    if shap_results is not None:
+        logger.info("Generating SHAP plots ...")
+        model_name = shap_results.get("model_name", "")
+        feat_type = shap_results.get("feature_type", "")
+        global_imp = shap_results.get("global_importance")
+        if global_imp is not None and not global_imp.empty:
+            saved.append(plot_shap_global_importance(
+                global_imp, model_name=model_name, feature_type=feat_type, config=config,
+            ))
+        if "shap_values" in shap_results and "X_test" in shap_results:
+            saved.append(plot_shap_summary(
+                shap_results["shap_values"],
+                shap_results["X_test"],
+                shap_results["feature_names"],
+                model_name=model_name, feature_type=feat_type, config=config,
+            ))
+        for i, patient in enumerate(shap_results.get("patient_examples", [])):
+            saved.append(plot_shap_patient_explanation(
+                patient, model_name=model_name, feature_type=feat_type,
+                config=config, suffix=f"_top{i+1}",
+            ))
 
     # Fairness
     if fairness_results is not None:

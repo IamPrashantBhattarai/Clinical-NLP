@@ -392,6 +392,21 @@ def test_optimal_threshold():
     return f"Optimal threshold: {thresh}, F1: {score}"
 
 
+def test_tune_hyperparameters():
+    from src.predict import tune_hyperparameters
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["tfidf"]["X"]
+    y = feature_sets["label"]
+    best_params, cv_score = tune_hyperparameters(
+        "logistic_regression", X, y,
+        n_iter=5, cv_folds=3, scoring="roc_auc",
+    )
+    assert isinstance(best_params, dict), "Expected dict of best params"
+    assert "C" in best_params, "Expected 'C' in logistic_regression params"
+    assert 0 <= cv_score <= 1, f"CV score out of range: {cv_score}"
+    return f"Best params: {best_params}, CV score: {cv_score}"
+
+
 def test_full_prediction_pipeline():
     feature_sets = _build_small_feature_sets()
     from src.predict import run_prediction_pipeline
@@ -405,6 +420,85 @@ def test_full_prediction_pipeline():
     assert result["results_df"] is not None
     best = result["best"]
     return f"Best: {best.get('model')} + {best.get('feature_type')} — ROC-AUC: {best.get('roc_auc')}"
+
+
+def test_shap_global_importance():
+    from src.explainability import compute_shap_values, shap_global_importance
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["structured"]["X"]
+    y = feature_sets["label"]
+    feat_names = feature_sets["structured"]["names"]
+
+    from src.predict import train_model
+    model = train_model("random_forest", X, y, use_smote=False)
+
+    out = compute_shap_values(model, X, X_background=X, model_name="random_forest", max_samples=20)
+    assert out["shap_values"].shape[0] > 0
+    assert out["shap_values"].shape[1] == X.shape[1]
+
+    imp_df = shap_global_importance(out["shap_values"], feat_names, top_n=5)
+    assert len(imp_df) <= 5
+    assert "mean_abs_shap" in imp_df.columns
+    return f"SHAP shape: {out['shap_values'].shape}, top: {imp_df.iloc[0]['feature']}"
+
+
+def test_shap_patient_explanation():
+    from src.explainability import compute_shap_values, explain_patient
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["structured"]["X"]
+    y = feature_sets["label"]
+    feat_names = feature_sets["structured"]["names"]
+
+    from src.predict import train_model
+    model = train_model("random_forest", X, y, use_smote=False)
+
+    out = compute_shap_values(model, X, X_background=X, model_name="random_forest", max_samples=10)
+    explanation = explain_patient(
+        out["shap_values"], out["X"], feat_names,
+        patient_idx=0, base_value=out["base_value"], top_n=5,
+    )
+    assert "top_features" in explanation
+    assert len(explanation["top_features"]) <= 5
+    assert "direction" in explanation["top_features"].columns
+    return f"Patient 0: base={explanation['base_value']:.3f}, pred={explanation['predicted_logit']:.3f}"
+
+
+def test_run_shap_analysis():
+    from src.explainability import run_shap_analysis
+    from src.predict import run_prediction_pipeline
+    feature_sets = _build_small_feature_sets()
+    config = _load_config()
+    config["prediction"]["models"] = ["random_forest"]
+    config["prediction"]["feature_types"] = ["structured"]
+    config["prediction"].setdefault("tuning", {})["enabled"] = False
+    pred = run_prediction_pipeline(feature_sets, config=config)
+
+    shap_out = run_shap_analysis(pred, feature_sets, config=config, n_explain=20, n_patients_to_show=2)
+    assert shap_out["model_name"] == "random_forest"
+    assert "global_importance" in shap_out
+    assert len(shap_out["patient_examples"]) == 2
+    return f"Best: {shap_out['model_name']} + {shap_out['feature_type']}, top: {shap_out['global_importance'].iloc[0]['feature']}"
+
+
+def test_prediction_pipeline_with_tuning():
+    feature_sets = _build_small_feature_sets()
+    from src.predict import run_prediction_pipeline
+    config = _load_config()
+    config["prediction"]["models"] = ["logistic_regression"]
+    config["prediction"]["feature_types"] = ["tfidf"]
+    config["prediction"]["tuning"] = {
+        "enabled": True,
+        "n_iter": 5,
+        "cv_folds": 3,
+        "scoring": "roc_auc",
+    }
+    result = run_prediction_pipeline(feature_sets, config=config)
+    assert len(result["tuned_params"]) > 0, "Expected tuned params"
+    key = ("logistic_regression", "tfidf")
+    assert key in result["tuned_params"], f"Missing tuned params for {key}"
+    info = result["tuned_params"][key]
+    assert "C" in info["params"], "Expected 'C' in tuned params"
+    return f"Tuned: {info['params']}, CV: {info['cv_score']}"
 
 
 # ─────────────────────────────────────────────
@@ -628,7 +722,16 @@ def main():
     results.append(run("cross_validate_model()", test_cross_validate))
     results.append(run("get_feature_importance()", test_feature_importance))
     results.append(run("find_optimal_threshold()", test_optimal_threshold))
+    results.append(run("tune_hyperparameters()", test_tune_hyperparameters))
     results.append(run("run_prediction_pipeline()", test_full_prediction_pipeline))
+    results.append(run("run_prediction_pipeline(tuning=True)", test_prediction_pipeline_with_tuning))
+
+    print(HEAD)
+    print("  SECTION 4.5 — SHAP Explainability")
+    print("-" * 60)
+    results.append(run("compute_shap_values + global", test_shap_global_importance))
+    results.append(run("explain_patient()", test_shap_patient_explanation))
+    results.append(run("run_shap_analysis()", test_run_shap_analysis))
 
     print(HEAD)
     print("  SECTION 5 — Fairness Analysis")
