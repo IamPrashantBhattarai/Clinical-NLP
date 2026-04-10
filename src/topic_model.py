@@ -467,6 +467,23 @@ def train_bertopic(
     umap_min_dist = bt_cfg.get("umap_min_dist", 0.0)
     hdbscan_min_cluster = bt_cfg.get("hdbscan_min_cluster_size", 50)
 
+    # Scale parameters for small datasets
+    n_docs = len(texts)
+    if n_docs < 500:
+        min_topic_size = max(5, min(min_topic_size, n_docs // 10))
+        hdbscan_min_cluster = max(5, min(hdbscan_min_cluster, n_docs // 10))
+        umap_n_neighbors = min(umap_n_neighbors, max(5, n_docs // 10))
+        logger.info(
+            "Small dataset (%d docs) — adjusted: min_topic_size=%d, "
+            "hdbscan_min_cluster=%d, umap_n_neighbors=%d",
+            n_docs, min_topic_size, hdbscan_min_cluster, umap_n_neighbors,
+        )
+
+    # Disable auto-reduction for small datasets (can crash with few clusters)
+    if n_docs < 500 and nr_topics == "auto":
+        nr_topics = None
+        logger.info("Disabled nr_topics='auto' for small dataset.")
+
     logger.info("Loading embedding model: %s ...", embedding_model_name)
     try:
         embedding_model = SentenceTransformer(embedding_model_name)
@@ -491,14 +508,18 @@ def train_bertopic(
         prediction_data=True,
     )
 
-    topic_model = BERTopic(
-        embedding_model=embedding_model,
-        umap_model=umap_model,
-        hdbscan_model=hdbscan_model,
-        nr_topics=nr_topics,
-        top_n_words=top_n_words,
-        verbose=True,
-    )
+    bt_kwargs = {
+        "embedding_model": embedding_model,
+        "umap_model": umap_model,
+        "hdbscan_model": hdbscan_model,
+        "top_n_words": top_n_words,
+        "min_topic_size": min_topic_size,
+        "verbose": True,
+    }
+    if nr_topics is not None:
+        bt_kwargs["nr_topics"] = nr_topics
+
+    topic_model = BERTopic(**bt_kwargs)
 
     logger.info("Fitting BERTopic on %d documents ...", len(texts))
     topics, probs = topic_model.fit_transform(texts)

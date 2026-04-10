@@ -458,6 +458,57 @@ def test_fairness_audit():
 
 
 # ─────────────────────────────────────────────
+# SECTION 5.5 — Embeddings
+# ─────────────────────────────────────────────
+
+def test_load_embedding_model():
+    from src.embeddings import load_embedding_model
+    tokenizer, model, device = load_embedding_model("clinicalbert", device="cpu")
+    assert tokenizer is not None
+    assert model is not None
+    assert model.config.hidden_size == 768
+    return f"ClinicalBERT loaded, hidden_size={model.config.hidden_size}, device={device}"
+
+
+def test_embed_single_texts():
+    from src.embeddings import embed_texts
+    texts = [
+        "Patient admitted for acute heart failure with reduced ejection fraction.",
+        "Presented with community-acquired pneumonia and right lower lobe infiltrate.",
+        "",  # empty text should produce a zero vector
+    ]
+    emb, meta = embed_texts(texts, model_name="clinicalbert", device="cpu", show_progress=False)
+    assert emb.shape == (3, 768), f"Expected (3, 768), got {emb.shape}"
+    assert meta["n_documents"] == 3
+    # Non-empty texts should have non-zero embeddings
+    assert np.linalg.norm(emb[0]) > 0, "First embedding should be non-zero"
+    assert np.linalg.norm(emb[1]) > 0, "Second embedding should be non-zero"
+    # Empty text should be zero vector
+    assert np.linalg.norm(emb[2]) == 0.0, "Empty text should produce zero vector"
+    return f"Shape: {emb.shape}, chunked: {meta['n_chunked']}/{meta['n_documents']}"
+
+
+def test_embed_long_text_chunking():
+    from src.embeddings import embed_texts
+    # Create a text long enough to require chunking (>510 tokens)
+    long_text = "The patient presented with " + " ".join(["clinical finding"] * 300)
+    emb, meta = embed_texts([long_text], model_name="clinicalbert", device="cpu", show_progress=False)
+    assert emb.shape == (1, 768)
+    assert meta["n_chunked"] == 1, "Long text should have been chunked"
+    assert np.linalg.norm(emb[0]) > 0
+    return f"Chunked 1 long doc, embedding norm: {np.linalg.norm(emb[0]):.4f}"
+
+
+def test_reduce_embeddings():
+    from src.embeddings import reduce_embeddings
+    fake_emb = np.random.randn(50, 768).astype(np.float32)
+    reduced, reducer = reduce_embeddings(fake_emb, n_components=20, method="pca")
+    assert reduced.shape == (50, 20), f"Expected (50, 20), got {reduced.shape}"
+    assert reducer is not None
+    return f"PCA: {fake_emb.shape} -> {reduced.shape}"
+
+
+# ─────────────────────────────────────────────
 # SECTION 6 — Visualization
 # ─────────────────────────────────────────────
 
@@ -585,6 +636,14 @@ def main():
     results.append(run("compute_group_metrics()", test_group_metrics))
     results.append(run("compute_fairness_metrics()", test_fairness_metrics))
     results.append(run("run_fairness_audit()", test_fairness_audit))
+
+    print(HEAD)
+    print("  SECTION 5.5 — Embeddings")
+    print("-" * 60)
+    results.append(run("load_embedding_model()", test_load_embedding_model))
+    results.append(run("embed_texts() basic", test_embed_single_texts))
+    results.append(run("embed_texts() long text chunking", test_embed_long_text_chunking))
+    results.append(run("reduce_embeddings() PCA", test_reduce_embeddings))
 
     print(HEAD)
     print("  SECTION 6 — Visualization")
