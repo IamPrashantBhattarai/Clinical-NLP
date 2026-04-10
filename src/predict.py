@@ -15,7 +15,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from scipy.sparse import issparse
-from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.model_selection import StratifiedKFold, RandomizedSearchCV, train_test_split
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -179,6 +179,118 @@ def get_model(name: str, random_seed: int = 42):
 
 
 # ---------------------------------------------------------------------------
+# 3.5 Hyperparameter tuning
+# ---------------------------------------------------------------------------
+
+PARAM_GRIDS = {
+    "logistic_regression": {
+        "C": [0.001, 0.01, 0.1, 0.5, 1.0, 5.0, 10.0],
+        "penalty": ["l1", "l2"],
+        "solver": ["saga"],
+    },
+    "random_forest": {
+        "n_estimators": [100, 200, 400],
+        "max_depth": [5, 10, 20, None],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 5],
+        "max_features": ["sqrt", "log2"],
+    },
+    "xgboost": {
+        "n_estimators": [100, 200, 400],
+        "max_depth": [3, 5, 7, 10],
+        "learning_rate": [0.01, 0.05, 0.1, 0.2],
+        "subsample": [0.6, 0.8, 1.0],
+        "colsample_bytree": [0.6, 0.8, 1.0],
+        "min_child_weight": [1, 3, 5],
+        "gamma": [0, 0.1, 0.3],
+    },
+    "lightgbm": {
+        "n_estimators": [100, 200, 400],
+        "max_depth": [3, 5, 10, -1],
+        "learning_rate": [0.01, 0.05, 0.1, 0.2],
+        "num_leaves": [15, 31, 63],
+        "subsample": [0.6, 0.8, 1.0],
+        "colsample_bytree": [0.6, 0.8, 1.0],
+        "min_child_samples": [5, 10, 20],
+    },
+}
+
+
+def tune_hyperparameters(
+    model_name: str,
+    X_train,
+    y_train,
+    n_iter: int = 30,
+    cv_folds: int = 5,
+    scoring: str = "roc_auc",
+    random_seed: int = 42,
+) -> Tuple[dict, float]:
+    """
+    Randomized hyperparameter search with stratified cross-validation.
+
+    Parameters
+    ----------
+    model_name : str
+        One of: logistic_regression, random_forest, xgboost, lightgbm.
+    X_train : array-like
+        Training features.
+    y_train : array-like
+        Training labels.
+    n_iter : int
+        Number of random parameter combinations to try.
+    cv_folds : int
+        Number of cross-validation folds.
+    scoring : str
+        Metric to optimize (default: roc_auc).
+    random_seed : int
+
+    Returns
+    -------
+    tuple
+        (best_params dict, best_cv_score float)
+    """
+    base_model = get_model(model_name, random_seed=random_seed)
+    param_grid = PARAM_GRIDS.get(model_name)
+    if param_grid is None:
+        logger.warning("No param grid for '%s' — skipping tuning.", model_name)
+        return {}, 0.0
+
+    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=random_seed)
+
+    search = RandomizedSearchCV(
+        estimator=base_model,
+        param_distributions=param_grid,
+        n_iter=min(n_iter, _grid_size(param_grid)),
+        scoring=scoring,
+        cv=cv,
+        random_state=random_seed,
+        n_jobs=1,
+        verbose=0,
+        refit=False,
+    )
+
+    logger.info(
+        "Tuning %s — %d iterations, %d-fold CV, scoring=%s ...",
+        model_name, search.n_iter, cv_folds, scoring,
+    )
+    search.fit(X_train, y_train)
+
+    logger.info(
+        "Best %s params (CV %s=%.4f): %s",
+        model_name, scoring, search.best_score_, search.best_params_,
+    )
+    return search.best_params_, round(search.best_score_, 4)
+
+
+def _grid_size(param_grid: dict) -> int:
+    """Calculate total combinations in a parameter grid."""
+    size = 1
+    for values in param_grid.values():
+        size *= len(values)
+    return size
+
+
+# ---------------------------------------------------------------------------
 # 4. Train a single model
 # ---------------------------------------------------------------------------
 
@@ -190,9 +302,10 @@ def train_model(
     y_val=None,
     use_smote: bool = False,
     random_seed: int = 42,
+    tuned_params: Optional[dict] = None,
 ):
     """
-    Train a model with optional SMOTE and early stopping (for boosters).
+    Train a model with optional SMOTE, tuned hyperparameters, and early stopping.
 
     Returns the fitted model.
     """
@@ -200,6 +313,11 @@ def train_model(
         X_train, y_train = apply_smote(X_train, y_train, random_seed=random_seed)
 
     model = get_model(model_name, random_seed=random_seed)
+
+    # Apply tuned hyperparameters
+    if tuned_params:
+        model.set_params(**tuned_params)
+        logger.info("Applied tuned params for %s: %s", model_name, tuned_params)
 
     # Set scale_pos_weight for XGBoost
     if model_name == "xgboost":
@@ -538,11 +656,19 @@ def run_prediction_pipeline(
         "embeddings": "embeddings",
     }
 
+    # Tuning config
+    tune_cfg = pred_cfg.get("tuning", {})
+    enable_tuning = tune_cfg.get("enabled", False)
+    tune_n_iter = tune_cfg.get("n_iter", 30)
+    tune_cv_folds = tune_cfg.get("cv_folds", 5)
+    tune_scoring = tune_cfg.get("scoring", "roc_auc")
+
     all_results = []
     all_models = {}
     all_splits = {}
     all_cv = []
     all_importances = {}
+    all_tuned_params = {}
 
     for feat_type in feature_types:
         feat_key = FEATURE_KEY_MAP.get(feat_type, feat_type)
@@ -565,6 +691,22 @@ def run_prediction_pipeline(
         for model_name in model_names:
             logger.info("--- %s + %s ---", model_name, feat_type)
 
+            # Hyperparameter tuning
+            tuned_params = None
+            if enable_tuning:
+                tuned_params, cv_score = tune_hyperparameters(
+                    model_name,
+                    splits["X_train"], splits["y_train"],
+                    n_iter=tune_n_iter,
+                    cv_folds=tune_cv_folds,
+                    scoring=tune_scoring,
+                    random_seed=random_seed,
+                )
+                all_tuned_params[(model_name, feat_type)] = {
+                    "params": tuned_params,
+                    "cv_score": cv_score,
+                }
+
             # Train
             model = train_model(
                 model_name,
@@ -572,6 +714,7 @@ def run_prediction_pipeline(
                 X_val=splits["X_val"], y_val=splits["y_val"],
                 use_smote=False,
                 random_seed=random_seed,
+                tuned_params=tuned_params,
             )
             all_models[(model_name, feat_type)] = model
 
@@ -648,4 +791,5 @@ def run_prediction_pipeline(
         "importances": all_importances,
         "results_df": results_df,
         "saved_model_paths": saved_paths,
+        "tuned_params": all_tuned_params,
     }

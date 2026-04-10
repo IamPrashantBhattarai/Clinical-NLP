@@ -78,6 +78,11 @@ prediction:
     - "structured"
     - "embeddings"
     - "combined"
+  tuning:
+    enabled: true
+    n_iter: 30
+    cv_folds: 5
+    scoring: "roc_auc"
   tfidf:
     max_features: 5000
     ngram_range: [1, 2]
