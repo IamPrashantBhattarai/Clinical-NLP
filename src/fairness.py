@@ -67,6 +67,7 @@ def compute_group_metrics(
         "f1": lambda y, p: f1_score(y, p, zero_division=0),
         "fpr": false_positive_rate,
         "fnr": false_negative_rate,
+        "selection_rate": lambda y, p: float(np.asarray(p).mean()),
     }
 
     mf = MetricFrame(

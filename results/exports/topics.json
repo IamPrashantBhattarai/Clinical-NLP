@@ -1,0 +1,831 @@
+{
+  "topics": [
+    {
+      "topic_id": 0,
+      "label": "Neurological",
+      "words": [
+        {
+          "word": "stroke",
+          "weight": 0.053599998354911804
+        },
+        {
+          "word": "therapy",
+          "weight": 0.03790000081062317
+        },
+        {
+          "word": "initiate",
+          "weight": 0.02419999986886978
+        },
+        {
+          "word": "acute",
+          "weight": 0.016100000590085983
+        },
+        {
+          "word": "neurology",
+          "weight": 0.01600000075995922
+        },
+        {
+          "word": "female",
+          "weight": 0.01590000092983246
+        },
+        {
+          "word": "infarct",
+          "weight": 0.012799999676644802
+        },
+        {
+          "word": "ischemic",
+          "weight": 0.012799999676644802
+        },
+        {
+          "word": "workup",
+          "weight": 0.012799999676644802
+        },
+        {
+          "word": "antiplatelet",
+          "weight": 0.012799999676644802
+        },
+        {
+          "word": "ct",
+          "weight": 0.012799999676644802
+        },
+        {
+          "word": "mri",
+          "weight": 0.012799999676644802
+        }
+      ],
+      "readmission_rate": 0.4375
+    },
+    {
+      "topic_id": 1,
+      "label": "Neurological (2)",
+      "words": [
+        {
+          "word": "mental",
+          "weight": 0.048700001090765
+        },
+        {
+          "word": "status",
+          "weight": 0.048700001090765
+        },
+        {
+          "word": "male",
+          "weight": 0.04399999976158142
+        },
+        {
+          "word": "altered",
+          "weight": 0.032600000500679016
+        },
+        {
+          "word": "non",
+          "weight": 0.02669999934732914
+        },
+        {
+          "word": "alter",
+          "weight": 0.01640000008046627
+        },
+        {
+          "word": "stroke",
+          "weight": 0.016100000590085983
+        },
+        {
+          "word": "fibrillation",
+          "weight": 0.014700000174343586
+        },
+        {
+          "word": "atrial",
+          "weight": 0.014600000344216824
+        },
+        {
+          "word": "initiate",
+          "weight": 0.014000000432133675
+        },
+        {
+          "word": "abdomen",
+          "weight": 0.01360000018030405
+        },
+        {
+          "word": "tender",
+          "weight": 0.01360000018030405
+        }
+      ],
+      "readmission_rate": 0.0
+    },
+    {
+      "topic_id": 2,
+      "label": "Respiratory / Pulmonary",
+      "words": [
+        {
+          "word": "copd",
+          "weight": 0.041099999099969864
+        },
+        {
+          "word": "male",
+          "weight": 0.01810000091791153
+        },
+        {
+          "word": "disease",
+          "weight": 0.016200000420212746
+        },
+        {
+          "word": "prednisone",
+          "weight": 0.015599999576807022
+        },
+        {
+          "word": "iv",
+          "weight": 0.015399999916553497
+        },
+        {
+          "word": "pulmonary",
+          "weight": 0.014600000344216824
+        },
+        {
+          "word": "albuterol",
+          "weight": 0.014499999582767487
+        },
+        {
+          "word": "acute",
+          "weight": 0.014299999922513962
+        },
+        {
+          "word": "initiate",
+          "weight": 0.013500000350177288
+        },
+        {
+          "word": "antibiotic",
+          "weight": 0.013399999588727951
+        },
+        {
+          "word": "hospitalization",
+          "weight": 0.012900000438094139
+        },
+        {
+          "word": "oral",
+          "weight": 0.012900000438094139
+        }
+      ],
+      "readmission_rate": 0.058823529411764705
+    },
+    {
+      "topic_id": 3,
+      "label": "Neurological (3)",
+      "words": [
+        {
+          "word": "stroke",
+          "weight": 0.02879999950528145
+        },
+        {
+          "word": "male",
+          "weight": 0.024800000712275505
+        },
+        {
+          "word": "therapy",
+          "weight": 0.024700000882148743
+        },
+        {
+          "word": "initiate",
+          "weight": 0.021900000050663948
+        },
+        {
+          "word": "hypertension",
+          "weight": 0.02070000022649765
+        },
+        {
+          "word": "apnea",
+          "weight": 0.016599999740719795
+        },
+        {
+          "word": "sleep",
+          "weight": 0.016599999740719795
+        },
+        {
+          "word": "obstructive",
+          "weight": 0.016599999740719795
+        },
+        {
+          "word": "urgency",
+          "weight": 0.015399999916553497
+        },
+        {
+          "word": "hypertensive",
+          "weight": 0.015399999916553497
+        },
+        {
+          "word": "neurology",
+          "weight": 0.0142000000923872
+        },
+        {
+          "word": "use",
+          "weight": 0.013399999588727951
+        }
+      ],
+      "readmission_rate": 0.5
+    },
+    {
+      "topic_id": 4,
+      "label": "Endocrine / Metabolic",
+      "words": [
+        {
+          "word": "insulin",
+          "weight": 0.04699999839067459
+        },
+        {
+          "word": "dka",
+          "weight": 0.039000000804662704
+        },
+        {
+          "word": "subcutaneous",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "glucose",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "diabetic",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "ketoacidosis",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "gap",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "regiman",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "potassium",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "ph",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "replete",
+          "weight": 0.015699999406933784
+        },
+        {
+          "word": "drip",
+          "weight": 0.015699999406933784
+        }
+      ],
+      "readmission_rate": 0.2
+    },
+    {
+      "topic_id": 5,
+      "label": "Cardiovascular",
+      "words": [
+        {
+          "word": "female",
+          "weight": 0.02669999934732914
+        },
+        {
+          "word": "iv",
+          "weight": 0.020899999886751175
+        },
+        {
+          "word": "gi",
+          "weight": 0.019700000062584877
+        },
+        {
+          "word": "disease",
+          "weight": 0.01860000006854534
+        },
+        {
+          "word": "extremity",
+          "weight": 0.014299999922513962
+        },
+        {
+          "word": "edema",
+          "weight": 0.014299999922513962
+        },
+        {
+          "word": "artery",
+          "weight": 0.013899999670684338
+        },
+        {
+          "word": "bilateral",
+          "weight": 0.013899999670684338
+        },
+        {
+          "word": "hypertension",
+          "weight": 0.013799999840557575
+        },
+        {
+          "word": "coronary",
+          "weight": 0.013799999840557575
+        },
+        {
+          "word": "bleed",
+          "weight": 0.01360000018030405
+        },
+        {
+          "word": "low",
+          "weight": 0.013399999588727951
+        }
+      ],
+      "readmission_rate": 0.09090909090909091
+    },
+    {
+      "topic_id": 6,
+      "label": "Cardiovascular (2)",
+      "words": [
+        {
+          "word": "ejection",
+          "weight": 0.03440000116825104
+        },
+        {
+          "word": "fraction",
+          "weight": 0.03440000116825104
+        },
+        {
+          "word": "reduced",
+          "weight": 0.034299999475479126
+        },
+        {
+          "word": "heart",
+          "weight": 0.03150000050663948
+        },
+        {
+          "word": "failure",
+          "weight": 0.03150000050663948
+        },
+        {
+          "word": "non",
+          "weight": 0.026799999177455902
+        },
+        {
+          "word": "gerd",
+          "weight": 0.024800000712275505
+        },
+        {
+          "word": "male",
+          "weight": 0.023600000888109207
+        },
+        {
+          "word": "abdomen",
+          "weight": 0.022600000724196434
+        },
+        {
+          "word": "tender",
+          "weight": 0.022600000724196434
+        },
+        {
+          "word": "vascular",
+          "weight": 0.0210999995470047
+        },
+        {
+          "word": "peripheral",
+          "weight": 0.020899999886751175
+        }
+      ],
+      "readmission_rate": null
+    },
+    {
+      "topic_id": 7,
+      "label": "Cardiovascular (3)",
+      "words": [
+        {
+          "word": "type",
+          "weight": 0.04230000078678131
+        },
+        {
+          "word": "mellitus",
+          "weight": 0.04230000078678131
+        },
+        {
+          "word": "general",
+          "weight": 0.033399999141693115
+        },
+        {
+          "word": "alert",
+          "weight": 0.028699999675154686
+        },
+        {
+          "word": "distress",
+          "weight": 0.0284000001847744
+        },
+        {
+          "word": "orient",
+          "weight": 0.0284000001847744
+        },
+        {
+          "word": "heart",
+          "weight": 0.02810000069439411
+        },
+        {
+          "word": "failure",
+          "weight": 0.02810000069439411
+        },
+        {
+          "word": "diabetes",
+          "weight": 0.0215000007301569
+        },
+        {
+          "word": "mild",
+          "weight": 0.020999999716877937
+        },
+        {
+          "word": "male",
+          "weight": 0.020800000056624413
+        },
+        {
+          "word": "hypertensive",
+          "weight": 0.018799999728798866
+        }
+      ],
+      "readmission_rate": 0.0
+    },
+    {
+      "topic_id": 8,
+      "label": "Infection / Sepsis",
+      "words": [
+        {
+          "word": "pneumonia",
+          "weight": 0.03020000085234642
+        },
+        {
+          "word": "culture",
+          "weight": 0.02019999921321869
+        },
+        {
+          "word": "female",
+          "weight": 0.014800000004470348
+        },
+        {
+          "word": "acquire",
+          "weight": 0.013899999670684338
+        },
+        {
+          "word": "antibiotic",
+          "weight": 0.01360000018030405
+        },
+        {
+          "word": "use",
+          "weight": 0.013199999928474426
+        },
+        {
+          "word": "chest",
+          "weight": 0.012199999764561653
+        },
+        {
+          "word": "air",
+          "weight": 0.012199999764561653
+        },
+        {
+          "word": "room",
+          "weight": 0.012199999764561653
+        },
+        {
+          "word": "male",
+          "weight": 0.012000000104308128
+        },
+        {
+          "word": "reduced",
+          "weight": 0.01140000019222498
+        },
+        {
+          "word": "ejection",
+          "weight": 0.01140000019222498
+        }
+      ],
+      "readmission_rate": 0.17647058823529413
+    },
+    {
+      "topic_id": 9,
+      "label": "Renal / Kidney",
+      "words": [
+        {
+          "word": "aki",
+          "weight": 0.07280000299215317
+        },
+        {
+          "word": "kidney",
+          "weight": 0.07039999961853027
+        },
+        {
+          "word": "injury",
+          "weight": 0.04349999874830246
+        },
+        {
+          "word": "fluid",
+          "weight": 0.03869999945163727
+        },
+        {
+          "word": "acute",
+          "weight": 0.03799999877810478
+        },
+        {
+          "word": "nephrology",
+          "weight": 0.029100000858306885
+        },
+        {
+          "word": "depression",
+          "weight": 0.025200000032782555
+        },
+        {
+          "word": "fever",
+          "weight": 0.024399999529123306
+        },
+        {
+          "word": "chill",
+          "weight": 0.024299999698996544
+        },
+        {
+          "word": "hypertension",
+          "weight": 0.023800000548362732
+        },
+        {
+          "word": "nephrotoxic",
+          "weight": 0.023600000888109207
+        },
+        {
+          "word": "hold",
+          "weight": 0.023399999365210533
+        }
+      ],
+      "readmission_rate": null
+    },
+    {
+      "topic_id": 10,
+      "label": "Neurological (4)",
+      "words": [
+        {
+          "word": "disease",
+          "weight": 0.0421999990940094
+        },
+        {
+          "word": "chronic",
+          "weight": 0.025800000876188278
+        },
+        {
+          "word": "non",
+          "weight": 0.019999999552965164
+        },
+        {
+          "word": "male",
+          "weight": 0.019899999722838402
+        },
+        {
+          "word": "kidney",
+          "weight": 0.01759999990463257
+        },
+        {
+          "word": "general",
+          "weight": 0.017500000074505806
+        },
+        {
+          "word": "abdomen",
+          "weight": 0.01590000092983246
+        },
+        {
+          "word": "tender",
+          "weight": 0.01590000092983246
+        },
+        {
+          "word": "peripheral",
+          "weight": 0.01549999974668026
+        },
+        {
+          "word": "vascular",
+          "weight": 0.015399999916553497
+        },
+        {
+          "word": "use",
+          "weight": 0.014800000004470348
+        },
+        {
+          "word": "liver",
+          "weight": 0.013899999670684338
+        }
+      ],
+      "readmission_rate": 0.0
+    },
+    {
+      "topic_id": 11,
+      "label": "Infection / Sepsis (2)",
+      "words": [
+        {
+          "word": "sepsis",
+          "weight": 0.025299999862909317
+        },
+        {
+          "word": "iv",
+          "weight": 0.016499999910593033
+        },
+        {
+          "word": "male",
+          "weight": 0.015300000086426735
+        },
+        {
+          "word": "disease",
+          "weight": 0.014600000344216824
+        },
+        {
+          "word": "vasopressor",
+          "weight": 0.01269999984651804
+        },
+        {
+          "word": "culture",
+          "weight": 0.012600000016391277
+        },
+        {
+          "word": "use",
+          "weight": 0.012299999594688416
+        },
+        {
+          "word": "pulmonary",
+          "weight": 0.011500000022351742
+        },
+        {
+          "word": "female",
+          "weight": 0.01140000019222498
+        },
+        {
+          "word": "fluid",
+          "weight": 0.010400000028312206
+        },
+        {
+          "word": "blood",
+          "weight": 0.009600000455975533
+        },
+        {
+          "word": "administer",
+          "weight": 0.009100000374019146
+        }
+      ],
+      "readmission_rate": 0.13793103448275862
+    },
+    {
+      "topic_id": 12,
+      "label": "Renal / Kidney (2)",
+      "words": [
+        {
+          "word": "male",
+          "weight": 0.01889999955892563
+        },
+        {
+          "word": "pain",
+          "weight": 0.016899999231100082
+        },
+        {
+          "word": "iv",
+          "weight": 0.016300000250339508
+        },
+        {
+          "word": "chest",
+          "weight": 0.016200000420212746
+        },
+        {
+          "word": "use",
+          "weight": 0.014700000174343586
+        },
+        {
+          "word": "kidney",
+          "weight": 0.014000000432133675
+        },
+        {
+          "word": "non",
+          "weight": 0.011900000274181366
+        },
+        {
+          "word": "neurological",
+          "weight": 0.011500000022351742
+        },
+        {
+          "word": "hypertension",
+          "weight": 0.010900000110268593
+        },
+        {
+          "word": "bilateral",
+          "weight": 0.010599999688565731
+        },
+        {
+          "word": "nephrology",
+          "weight": 0.010499999858438969
+        },
+        {
+          "word": "female",
+          "weight": 0.010400000028312206
+        }
+      ],
+      "readmission_rate": 0.1
+    },
+    {
+      "topic_id": 13,
+      "label": "Respiratory / Pulmonary (2)",
+      "words": [
+        {
+          "word": "pulmonary",
+          "weight": 0.03310000151395798
+        },
+        {
+          "word": "female",
+          "weight": 0.03180000185966492
+        },
+        {
+          "word": "twice",
+          "weight": 0.029400000348687172
+        },
+        {
+          "word": "embolism",
+          "weight": 0.025100000202655792
+        },
+        {
+          "word": "bilateral",
+          "weight": 0.022199999541044235
+        },
+        {
+          "word": "gerd",
+          "weight": 0.01899999938905239
+        },
+        {
+          "word": "nightly",
+          "weight": 0.01850000023841858
+        },
+        {
+          "word": "deny",
+          "weight": 0.016899999231100082
+        },
+        {
+          "word": "use",
+          "weight": 0.016899999231100082
+        },
+        {
+          "word": "contrast",
+          "weight": 0.015300000086426735
+        },
+        {
+          "word": "non",
+          "weight": 0.015200000256299973
+        },
+        {
+          "word": "metformin",
+          "weight": 0.01510000042617321
+        }
+      ],
+      "readmission_rate": 0.0
+    },
+    {
+      "topic_id": 14,
+      "label": "Respiratory / Pulmonary (3)",
+      "words": [
+        {
+          "word": "female",
+          "weight": 0.027000000700354576
+        },
+        {
+          "word": "levofloxacin",
+          "weight": 0.023399999365210533
+        },
+        {
+          "word": "x7",
+          "weight": 0.02329999953508377
+        },
+        {
+          "word": "disease",
+          "weight": 0.020899999886751175
+        },
+        {
+          "word": "nightly",
+          "weight": 0.02019999921321869
+        },
+        {
+          "word": "dvt",
+          "weight": 0.01979999989271164
+        },
+        {
+          "word": "home",
+          "weight": 0.019700000062584877
+        },
+        {
+          "word": "worsen",
+          "weight": 0.01850000023841858
+        },
+        {
+          "word": "ems",
+          "weight": 0.01850000023841858
+        },
+        {
+          "word": "call",
+          "weight": 0.01850000023841858
+        },
+        {
+          "word": "general",
+          "weight": 0.017500000074505806
+        },
+        {
+          "word": "embolism",
+          "weight": 0.017100000753998756
+        }
+      ],
+      "readmission_rate": 0.0
+    }
+  ],
+  "coherence_score": 0.4847,
+  "n_topics": 15
+}

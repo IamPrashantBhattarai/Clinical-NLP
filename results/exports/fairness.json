@@ -1,0 +1,103 @@
+{
+  "attributes": [
+    {
+      "attribute": "gender",
+      "groups": [
+        {
+          "group": "F",
+          "accuracy": 0.9333,
+          "precision": 0.6667,
+          "recall": 1.0,
+          "f1": 0.8,
+          "fpr": 0.0769,
+          "selection_rate": 0.2
+        },
+        {
+          "group": "M",
+          "accuracy": 0.6667,
+          "precision": 0.25,
+          "recall": 0.5,
+          "f1": 0.3333,
+          "fpr": 0.3,
+          "selection_rate": 0.3333
+        }
+      ],
+      "demographic_parity_difference": 0.1333,
+      "equalized_odds_difference": 0.5,
+      "fpr_difference": 0.2231,
+      "fnr_difference": 0.5
+    },
+    {
+      "attribute": "insurance",
+      "groups": [
+        {
+          "group": "Medicaid",
+          "accuracy": 0.5714,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.4286,
+          "selection_rate": 0.4286
+        },
+        {
+          "group": "Medicare",
+          "accuracy": 0.8889,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "f1": 0.8,
+          "fpr": 0.0,
+          "selection_rate": 0.2222
+        },
+        {
+          "group": "Other",
+          "accuracy": 0.9091,
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6667,
+          "fpr": 0.1,
+          "selection_rate": 0.1818
+        }
+      ],
+      "demographic_parity_difference": 0.2468,
+      "equalized_odds_difference": 1.0,
+      "fpr_difference": 0.4286,
+      "fnr_difference": 0.3333
+    },
+    {
+      "attribute": "age_group",
+      "groups": [
+        {
+          "group": "40-65",
+          "accuracy": 0.4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.6,
+          "selection_rate": 0.6
+        },
+        {
+          "group": "65+",
+          "accuracy": 0.8947,
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1": 0.75,
+          "fpr": 0.0667,
+          "selection_rate": 0.2105
+        },
+        {
+          "group": "<40",
+          "accuracy": 1.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "fpr": 0.0,
+          "selection_rate": 0.0
+        }
+      ],
+      "demographic_parity_difference": 0.6,
+      "equalized_odds_difference": 0.75,
+      "fpr_difference": 0.6,
+      "fnr_difference": 0.25
+    }
+  ]
+}
