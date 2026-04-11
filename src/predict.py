@@ -663,12 +663,19 @@ def run_prediction_pipeline(
     tune_cv_folds = tune_cfg.get("cv_folds", 5)
     tune_scoring = tune_cfg.get("scoring", "roc_auc")
 
+    # Feature selection config
+    fs_cfg = pred_cfg.get("feature_selection", {})
+    enable_fs = fs_cfg.get("enabled", False)
+    fs_method = fs_cfg.get("method", "univariate")
+    fs_apply_to = set(fs_cfg.get("apply_to", ["tfidf", "combined"]))
+
     all_results = []
     all_models = {}
     all_splits = {}
     all_cv = []
     all_importances = {}
     all_tuned_params = {}
+    all_feature_selection = {}
 
     for feat_type in feature_types:
         feat_key = FEATURE_KEY_MAP.get(feat_type, feat_type)
@@ -686,6 +693,35 @@ def run_prediction_pipeline(
 
         # Split
         splits = split_data(X, labels, test_size=test_size, val_size=val_size, random_seed=random_seed)
+
+        # Feature selection (fit on train, apply to val/test)
+        if enable_fs and feat_type in fs_apply_to:
+            from src.feature_selection import select_features, apply_selection
+            try:
+                fs_kwargs = {k: v for k, v in fs_cfg.items() if k not in ("enabled", "method", "apply_to")}
+                fs_out = select_features(
+                    splits["X_train"], splits["y_train"], feat_names,
+                    method=fs_method, **fs_kwargs,
+                )
+                indices = fs_out["indices"]
+                splits["X_train"] = fs_out["X_selected"]
+                splits["X_val"] = apply_selection(splits["X_val"], indices)
+                splits["X_test"] = apply_selection(splits["X_test"], indices)
+                feat_names = fs_out["names"]
+                all_feature_selection[feat_type] = {
+                    "method": fs_method,
+                    "n_before": fs_out["n_before"],
+                    "n_after": fs_out["n_after"],
+                    "indices": indices,
+                    "names": feat_names,
+                }
+                logger.info(
+                    "Applied %s feature selection on '%s': %d -> %d features",
+                    fs_method, feat_type, fs_out["n_before"], fs_out["n_after"],
+                )
+            except Exception as e:
+                logger.warning("Feature selection failed for '%s': %s", feat_type, e)
+
         all_splits[feat_type] = splits
 
         for model_name in model_names:
@@ -792,4 +828,5 @@ def run_prediction_pipeline(
         "results_df": results_df,
         "saved_model_paths": saved_paths,
         "tuned_params": all_tuned_params,
+        "feature_selection": all_feature_selection,
     }

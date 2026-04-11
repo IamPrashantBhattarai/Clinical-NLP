@@ -83,6 +83,16 @@ prediction:
     n_iter: 30
     cv_folds: 5
     scoring: "roc_auc"
+  feature_selection:
+    enabled: true
+    method: "univariate"          # variance, univariate, l1, rfe, shap
+    apply_to: ["tfidf", "combined"]  # only reduce high-dim feature sets
+    k: 200                        # for univariate
+    score_func: "f_classif"       # for univariate
+    # threshold: 0.0              # for variance
+    # C: 1.0                      # for l1
+    # n_features_to_select: 50    # for rfe
+    # top_k: 50                   # for shap
   tfidf:
     max_features: 5000
     ngram_range: [1, 2]

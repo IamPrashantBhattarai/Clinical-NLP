@@ -422,6 +422,100 @@ def test_full_prediction_pipeline():
     return f"Best: {best.get('model')} + {best.get('feature_type')} — ROC-AUC: {best.get('roc_auc')}"
 
 
+# ─────────────────────────────────────────────
+# SECTION 4.6 — Feature Selection
+# ─────────────────────────────────────────────
+
+def test_variance_threshold_selection():
+    from src.feature_selection import variance_threshold_selection
+    np.random.seed(0)
+    X = np.hstack([np.random.randn(50, 5), np.zeros((50, 3))])  # 3 zero-variance cols
+    names = [f"f{i}" for i in range(8)]
+    indices, _ = variance_threshold_selection(X, names, threshold=0.0)
+    assert len(indices) == 5, f"Expected 5 features, got {len(indices)}"
+    return f"Kept {len(indices)}/8 features (dropped {8 - len(indices)} constant)"
+
+
+def test_univariate_selection():
+    from src.feature_selection import univariate_selection
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["tfidf"]["X"]
+    y = feature_sets["label"]
+    names = feature_sets["tfidf"]["names"]
+    indices, kept = univariate_selection(X, y, names, k=20, score_func="f_classif")
+    assert len(indices) <= 20
+    assert len(kept) == len(indices)  # names align with indices
+    return f"Univariate kept {len(indices)} / {X.shape[1]} features"
+
+
+def test_l1_selection():
+    from src.feature_selection import l1_selection
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["structured"]["X"]
+    y = feature_sets["label"]
+    names = feature_sets["structured"]["names"]
+    indices, _ = l1_selection(X, y, names, C=1.0)
+    assert len(indices) > 0, "L1 selection eliminated all features"
+    return f"L1 kept {len(indices)} / {X.shape[1]} non-zero features"
+
+
+def test_rfe_selection():
+    from src.feature_selection import rfe_selection
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["structured"]["X"]
+    y = feature_sets["label"]
+    names = feature_sets["structured"]["names"]
+    indices, _ = rfe_selection(X, y, names, n_features_to_select=5, step=0.2)
+    assert len(indices) == 5, f"Expected 5 features, got {len(indices)}"
+    return f"RFE kept {len(indices)} / {X.shape[1]} features"
+
+
+def test_shap_selection():
+    from src.feature_selection import shap_selection
+    from src.predict import train_model
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["structured"]["X"]
+    y = feature_sets["label"]
+    names = feature_sets["structured"]["names"]
+    model = train_model("random_forest", X, y, use_smote=False)
+    indices, _ = shap_selection(model, X, names, model_name="random_forest", top_k=5, max_samples=20)
+    assert len(indices) == 5, f"Expected 5 features, got {len(indices)}"
+    return f"SHAP kept top {len(indices)} / {X.shape[1]} features"
+
+
+def test_select_features_dispatcher():
+    from src.feature_selection import select_features
+    feature_sets = _build_small_feature_sets()
+    X = feature_sets["tfidf"]["X"]
+    y = feature_sets["label"]
+    names = feature_sets["tfidf"]["names"]
+    out = select_features(X, y, names, method="univariate", k=15, score_func="f_classif")
+    assert out["n_after"] <= 15
+    assert out["X_selected"].shape[1] == out["n_after"]
+    return f"Dispatcher: {out['method']}, {out['n_before']} -> {out['n_after']}"
+
+
+def test_pipeline_with_feature_selection():
+    from src.predict import run_prediction_pipeline
+    feature_sets = _build_small_feature_sets()
+    config = _load_config()
+    config["prediction"]["models"] = ["logistic_regression"]
+    config["prediction"]["feature_types"] = ["tfidf"]
+    config["prediction"].setdefault("tuning", {})["enabled"] = False
+    config["prediction"]["feature_selection"] = {
+        "enabled": True,
+        "method": "univariate",
+        "apply_to": ["tfidf"],
+        "k": 30,
+        "score_func": "f_classif",
+    }
+    result = run_prediction_pipeline(feature_sets, config=config)
+    fs = result.get("feature_selection", {})
+    assert "tfidf" in fs, "Expected tfidf in feature_selection results"
+    assert fs["tfidf"]["n_after"] <= 30
+    return f"Pipeline FS: {fs['tfidf']['n_before']} -> {fs['tfidf']['n_after']} features"
+
+
 def test_shap_global_importance():
     from src.explainability import compute_shap_values, shap_global_importance
     feature_sets = _build_small_feature_sets()
@@ -725,6 +819,17 @@ def main():
     results.append(run("tune_hyperparameters()", test_tune_hyperparameters))
     results.append(run("run_prediction_pipeline()", test_full_prediction_pipeline))
     results.append(run("run_prediction_pipeline(tuning=True)", test_prediction_pipeline_with_tuning))
+
+    print(HEAD)
+    print("  SECTION 4.6 — Feature Selection")
+    print("-" * 60)
+    results.append(run("variance_threshold_selection()", test_variance_threshold_selection))
+    results.append(run("univariate_selection()", test_univariate_selection))
+    results.append(run("l1_selection()", test_l1_selection))
+    results.append(run("rfe_selection()", test_rfe_selection))
+    results.append(run("shap_selection()", test_shap_selection))
+    results.append(run("select_features() dispatcher", test_select_features_dispatcher))
+    results.append(run("pipeline w/ feature_selection", test_pipeline_with_feature_selection))
 
     print(HEAD)
     print("  SECTION 4.5 — SHAP Explainability")
