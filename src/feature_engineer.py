@@ -115,17 +115,24 @@ def create_topic_features(
         return matrix
 
     elif model_type == "bertopic":
-        _, probs = model.transform(corpus_or_texts)
-        if probs is None:
-            # HDBSCAN soft clustering not available — one-hot encode topic assignment
-            topics = model.topics_
-            n_topics = len(set(topics)) - (1 if -1 in topics else 0)
+        topics, probs = model.transform(corpus_or_texts)
+        probs_arr = np.asarray(probs) if probs is not None else None
+
+        if probs_arr is not None and probs_arr.ndim == 2:
+            # Full (n_docs, n_topics) distribution — use directly
+            matrix = probs_arr.astype(np.float32)
+        else:
+            # probs is None or 1-D (per-doc assigned-topic probability only).
+            # Fall back to one-hot encoding of the transform() topic assignments.
+            topics = list(topics)
+            valid = [t for t in topics if t >= 0]
+            n_topics = (max(valid) + 1) if valid else 1
             matrix = np.zeros((len(corpus_or_texts), n_topics), dtype=np.float32)
             for i, t in enumerate(topics):
-                if t >= 0:
+                if 0 <= t < n_topics:
                     matrix[i, t] = 1.0
-        else:
-            matrix = np.array(probs, dtype=np.float32)
+        if matrix.ndim == 1:
+            matrix = matrix.reshape(-1, 1)
         logger.info("BERTopic topic features — shape: %s", matrix.shape)
         return matrix
 
