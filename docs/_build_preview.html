@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Clinical NLP — Documentation</title>
+<style>
+@page {
+    size: A4;
+    margin: 2.2cm 2cm 2.4cm 2cm;
+    @frame footer {
+        -pdf-frame-content: footerContent;
+        left: 2cm; right: 2cm;
+        bottom: 1cm; height: 1cm;
+    }
+}
+@page cover {
+    size: A4;
+    margin: 0cm;
+}
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    color: #1f2937;
+}
+h1, h2, h3, h4 {
+    color: #0b3b66;
+    font-weight: 700;
+    margin-top: 18pt;
+    margin-bottom: 8pt;
+    page-break-after: avoid;
+}
+h1 { font-size: 22pt; border-bottom: 2pt solid #0b3b66; padding-bottom: 6pt; }
+h2 { font-size: 16pt; }
+h3 { font-size: 13pt; color: #114e89; }
+h4 { font-size: 11.5pt; color: #114e89; }
+p  { margin: 6pt 0; text-align: justify; }
+ul, ol { margin: 6pt 0 6pt 18pt; }
+li { margin: 2pt 0; }
+code {
+    font-family: "Courier New", monospace;
+    font-size: 9.5pt;
+    background-color: #f1f5f9;
+    color: #0b3b66;
+    padding: 1pt 3pt;
+    border-radius: 2pt;
+}
+pre {
+    background-color: #f8fafc;
+    border-left: 3pt solid #0b3b66;
+    padding: 8pt 10pt;
+    font-family: "Courier New", monospace;
+    font-size: 9pt;
+    line-height: 1.35;
+    color: #1e293b;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10pt 0;
+    font-size: 9.5pt;
+}
+th {
+    background-color: #0b3b66;
+    color: #ffffff;
+    padding: 6pt 8pt;
+    text-align: left;
+    font-weight: 600;
+}
+td {
+    padding: 5pt 8pt;
+    border-bottom: 0.5pt solid #cbd5e1;
+    vertical-align: top;
+}
+tr:nth-child(even) td { background-color: #f8fafc; }
+blockquote {
+    border-left: 3pt solid #94a3b8;
+    margin: 8pt 0;
+    padding: 4pt 12pt;
+    color: #475569;
+    font-style: italic;
+}
+hr { border: 0; border-top: 0.5pt solid #cbd5e1; margin: 12pt 0; }
+
+.cover {
+    -pdf-frame-content: coverContent;
+    background-color: #0b3b66;
+}
+.cover-wrap {
+    margin-top: 6.5cm;
+    padding: 0 2.2cm;
+    color: #ffffff;
+}
+.cover-eyebrow {
+    font-size: 11pt;
+    letter-spacing: 3pt;
+    color: #93c5fd;
+    text-transform: uppercase;
+    margin-bottom: 10pt;
+}
+.cover-title {
+    font-size: 40pt;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 14pt;
+    color: #ffffff;
+}
+.cover-subtitle {
+    font-size: 15pt;
+    color: #e0e7ff;
+    margin-bottom: 2cm;
+    line-height: 1.35;
+}
+.cover-rule {
+    border-top: 1.5pt solid #60a5fa;
+    width: 5cm;
+    margin: 0 0 0.8cm 0;
+}
+.cover-meta {
+    font-size: 11pt;
+    color: #dbeafe;
+    line-height: 1.7;
+}
+.cover-author {
+    font-size: 14pt;
+    color: #ffffff;
+    font-weight: 600;
+}
+.cover-footer {
+    position: absolute;
+    bottom: 2cm;
+    left: 2.2cm;
+    right: 2.2cm;
+    font-size: 9pt;
+    color: #93c5fd;
+    border-top: 0.5pt solid #1d4ed8;
+    padding-top: 8pt;
+}
+
+.toc-title {
+    font-size: 22pt;
+    color: #0b3b66;
+    border-bottom: 2pt solid #0b3b66;
+    padding-bottom: 6pt;
+    margin-bottom: 18pt;
+}
+.toc-item {
+    font-size: 11.5pt;
+    margin: 8pt 0;
+    color: #0b3b66;
+}
+.toc-dot {
+    color: #94a3b8;
+    margin: 0 4pt;
+}
+
+.section-header {
+    page-break-before: always;
+    margin-top: 0;
+}
+.section-label {
+    color: #2563eb;
+    font-size: 10pt;
+    letter-spacing: 2pt;
+    text-transform: uppercase;
+    margin-bottom: 4pt;
+}
+
+.footer {
+    font-size: 8.5pt;
+    color: #64748b;
+    border-top: 0.5pt solid #cbd5e1;
+    padding-top: 4pt;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="coverContent" class="cover">
+  <div class="cover-wrap">
+    <div class="cover-eyebrow">Technical Documentation</div>
+    <div class="cover-title">Clinical NLP</div>
+    <div class="cover-subtitle">Predicting 30-Day Hospital Readmission from Discharge Summaries</div>
+    <div class="cover-rule"></div>
+    <div class="cover-meta">
+      <div class="cover-author">Prashant Bhattarai</div>
+      Version 1.0 &nbsp;&middot;&nbsp; April 11, 2026<br/>
+      github.com/IamPrashantBhattarai/Clinical-NLP
+    </div>
+  </div>
+  <div class="cover-footer">
+    End-to-end clinical NLP pipeline &mdash; preprocessing, topic modeling,
+    clinical embeddings, prediction, SHAP explainability, and fairness auditing.
+  </div>
+</div>
+
+
+<div style="page-break-before: always;">
+  <div class="toc-title">Table of Contents</div>
+  <div class="toc-item">1. Project Overview <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 3</div>
+<div class="toc-item">2. Setup & Running <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 4</div>
+<div class="toc-item">3. Pipeline Reference <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 5</div>
+<div class="toc-item">4. Models & Evaluation <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 6</div>
+<div class="toc-item">5. Dashboard <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 7</div>
+<div class="toc-item">6. Configuration Reference <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 8</div>
+<div class="toc-item">7. Testing & Troubleshooting <span class="toc-dot">&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;&middot;</span> page 9</div>
+  <div style="margin-top: 1.2cm; font-size: 10pt; color: #475569;">
+    <em>Prepared by Prashant Bhattarai. This document describes the full Clinical NLP
+    pipeline for 30-day hospital readmission prediction, from data ingestion
+    through modeling, explainability, fairness auditing, and the companion
+    FastAPI dashboard.</em>
+  </div>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 1</div>
+  <h1>Project Overview</h1>
+  <h2>Goal</h2>
+<p>Predict whether a hospital patient will be readmitted within 30 days of discharge, using free-text discharge summaries plus structured admission data, and do so with:</p>
+<ul>
+<li><strong>Reproducible end-to-end automation</strong> — synthetic data in, figures + metrics + dashboard JSON out.</li>
+<li><strong>Clinically-aware NLP</strong> — clinical BERT variants, medical stopwords, section-aware preprocessing, topic labeling against a clinical keyword vocabulary.</li>
+<li><strong>Interpretability</strong> — SHAP-based global and per-patient explanations so predictions can be scrutinized.</li>
+<li><strong>Fairness awareness</strong> — explicit group-level auditing across gender, insurance, and age group using Fairlearn.</li>
+</ul>
+<h2>High-level architecture</h2>
+<pre><code>            ┌─────────────────────────┐
+            │  Data generation / load │  src/generate_synthetic_data.py
+            │  (MIMIC-IV or synthetic)│  src/data_loader.py
+            └────────────┬────────────┘
+                         │  merged DataFrame
+                         ▼
+            ┌─────────────────────────┐
+            │     Preprocessing       │  src/preprocess.py
+            │  PHI scrub + tokens     │
+            └────────────┬────────────┘
+                         │
+      ┌──────────────────┼──────────────────┐
+      ▼                  ▼                  ▼
+┌───────────┐  ┌──────────────────┐  ┌────────────────┐
+│ Clinical  │  │  Topic modeling  │  │  Feature eng.  │
+│ embeddings│  │  (LDA + BERTopic)│  │  (TF-IDF, ...) │
+│ src/embed │  │  src/topic_model │  │  src/feature_* │
+└─────┬─────┘  └────────┬─────────┘  └───────┬────────┘
+      │                 │                    │
+      └─────────────────┴────────────────────┘
+                         │  feature_sets dict
+                         ▼
+            ┌─────────────────────────┐
+            │  Prediction pipeline    │  src/predict.py
+            │  (4 models × feats)     │  + feature_selection
+            │  RandomizedSearchCV     │
+            └────────────┬────────────┘
+                         │
+      ┌──────────────────┼──────────────────┐
+      ▼                  ▼                  ▼
+┌───────────┐  ┌──────────────────┐  ┌────────────────┐
+│  SHAP     │  │  Fairness audit  │  │  Visualization │
+│ explain.  │  │  (Fairlearn)     │  │  figures       │
+└─────┬─────┘  └────────┬─────────┘  └───────┬────────┘
+      └─────────────────┴────────────────────┘
+                         │
+                         ▼
+            ┌─────────────────────────┐
+            │    exporter.py          │  → results/exports/*.json
+            └────────────┬────────────┘
+                         ▼
+            ┌─────────────────────────┐
+            │   FastAPI dashboard     │  dashboard/backend + frontend
+            └─────────────────────────┘
+</code></pre>
+<h2>Data flow (one run)</h2>
+<ol>
+<li><strong>Load</strong> merged cohort (<code>df</code>) — discharge notes + admissions + patients, with derived fields (<code>readmission_30day</code>, <code>los_days</code>, <code>age</code>).</li>
+<li><strong>Preprocess</strong> into <code>processed</code> — adds <code>cleaned_text</code>, <code>tokens</code>, <code>num_tokens</code>, etc.</li>
+<li><strong>Embed</strong> <code>processed["cleaned_text"]</code> → <code>embedding_matrix</code> (n_docs × d).</li>
+<li><strong>Topic model</strong> on eligible tokens → <code>lda_results</code> and <code>bertopic_model</code>.</li>
+<li><strong>Feature engineer</strong> → <code>feature_sets</code> (TF-IDF / topic_lda / topic_bertopic / embeddings / structured / text_stats / combined / label).</li>
+<li><strong>Predict</strong> → <code>prediction_results</code> with per-(model, feature) metrics, best model, tuned params, feature-selection info, trained models.</li>
+<li><strong>Explain</strong> best model → <code>shap_results</code>.</li>
+<li><strong>Audit fairness</strong> over protected attrs → <code>fairness_results</code>.</li>
+<li><strong>Visualize</strong> → PNGs under <code>results/figures/</code>.</li>
+<li><strong>Export</strong> JSON → <code>results/exports/{results,fairness,topics}.json</code> for the dashboard.</li>
+</ol>
+<h2>Design principles</h2>
+<ul>
+<li><strong>Config-first.</strong> Almost every knob (model list, topic counts, tuning iterations, feature-selection method, fairness attrs) lives in <code>config/config.yaml</code>. See <code>docs/06-configuration.md</code>.</li>
+<li><strong>Graceful degradation.</strong> BERTopic, scispaCy, GPU, and even trained models are optional — the pipeline and dashboard fall back to reasonable defaults or mock data when anything is missing.</li>
+<li><strong>Small-dataset safety.</strong> BERTopic auto-scales <code>min_topic_size</code>, HDBSCAN parameters, and disables <code>nr_topics='auto'</code> when there are &lt;500 docs. Preprocessing guards against empty notes; feature_engineer realigns shapes when eligible subsets differ from the full frame.</li>
+<li><strong>Sparse-aware.</strong> TF-IDF and combined matrices stay sparse through feature selection and splitting (<code>scipy.sparse.hstack</code>, <code>csr_matrix</code>) so memory stays bounded on the full vocabulary.</li>
+</ul>
+<h2>What's in scope vs. out</h2>
+<table>
+<thead>
+<tr>
+<th>In scope</th>
+<th>Out of scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Readmission prediction from free text + light structured data</td>
+<td>Time-to-event / survival modeling</td>
+</tr>
+<tr>
+<td>Single-task binary classification (30-day readmit)</td>
+<td>Multi-label outcome prediction</td>
+</tr>
+<tr>
+<td>Fairness auditing (post-hoc)</td>
+<td>In-training mitigation (reweighing, adversarial debiasing)</td>
+</tr>
+<tr>
+<td>SHAP for tree + linear models</td>
+<td>Counterfactual explanations, LIME</td>
+</tr>
+<tr>
+<td>Static dashboard backed by exported JSON</td>
+<td>Live model retraining from the UI</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>docs/03-pipeline.md</code> for a module-by-module walkthrough and <code>docs/04-models-and-evaluation.md</code> for the modeling, tuning, and evaluation details.</p>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 2</div>
+  <h1>Setup & Running</h1>
+  <h2>2.1 Prerequisites</h2>
+<ul>
+<li><strong>Python</strong> 3.10 or 3.11 (3.12 works but some ML libs lag on new releases)</li>
+<li><strong>OS</strong> Windows 10/11, macOS, or Linux. Development is done on Windows 11; paths in docs use forward slashes.</li>
+<li><strong>Memory</strong> ~4 GB free (synthetic data), 16 GB+ if running on a full MIMIC-IV subset.</li>
+<li><strong>GPU</strong> Optional. ClinicalBERT embeddings auto-detect CUDA — CPU works, just slower.</li>
+</ul>
+<h2>2.2 Install</h2>
+<pre><code class="language-bash">git clone https://github.com/IamPrashantBhattarai/Clinical-NLP.git ClinicalNLP
+cd ClinicalNLP
+
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# spaCy model (the pipeline uses en_core_web_sm by default)
+python -m spacy download en_core_web_sm
+
+# Optional: scispaCy (enables use_scispacy=True in preprocess)
+# pip install scispacy
+# pip install https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_sm-0.5.4.tar.gz
+</code></pre>
+<p>NLTK corpora (<code>stopwords</code>, <code>wordnet</code>, <code>punkt</code>, <code>punkt_tab</code>, <code>averaged_perceptron_tagger</code>) are downloaded lazily by <code>src/preprocess.py</code> on first use.</p>
+<h2>2.3 Data options</h2>
+<h3>A. Synthetic (default — no credentials required)</h3>
+<pre><code class="language-python">from src.generate_synthetic_data import run as generate_data
+generate_data(output_dir=&quot;data&quot;, n_patients=200)
+</code></pre>
+<p>This writes:
+- <code>data/synthetic_discharge.csv</code>
+- <code>data/synthetic_admissions.csv</code>
+- <code>data/synthetic_patients.csv</code></p>
+<p>Load it with <code>load_all(config, use_synthetic=True)</code> (the notebook does this).</p>
+<h3>B. Real MIMIC-IV</h3>
+<p>Place the CSVs that match the paths in <code>config/config.yaml</code> under <code>data:</code>:
+- <code>data/discharge.csv</code>
+- <code>data/admissions.csv</code>
+- <code>data/patients.csv</code></p>
+<p>Then load with <code>load_all(config, use_synthetic=False)</code>. A MIMIC-IV credentialed access is required — the repository ships none.</p>
+<h2>2.4 Running the pipeline</h2>
+<h3>Option 1 — Notebook (recommended)</h3>
+<pre><code class="language-bash">jupyter notebook notebooks/full_pipeline.ipynb
+</code></pre>
+<p>The notebook walks through every stage (data → preprocess → embeddings → LDA → BERTopic → features → prediction → SHAP → fairness → figures → dashboard export). Run cells top to bottom on a fresh kernel.</p>
+<h3>Option 2 — Programmatic</h3>
+<pre><code class="language-python">import yaml
+from src.data_loader import load_all
+from src.preprocess import build_preprocessing_pipeline
+from src.embeddings import embed_texts
+from src.topic_model import run_lda_pipeline, train_bertopic
+from src.feature_engineer import build_feature_sets
+from src.predict import run_prediction_pipeline
+from src.fairness import run_fairness_audit
+from src.explainability import run_shap_analysis
+from src.visualize import generate_all_figures
+from src.exporter import export_dashboard_json
+
+config = yaml.safe_load(open(&quot;config/config.yaml&quot;))
+
+df         = load_all(config, use_synthetic=True)
+processed  = build_preprocessing_pipeline(df, config=config)
+emb_matrix, _, _ = embed_texts(processed[&quot;cleaned_text&quot;].tolist(), config=config)
+
+eligible   = processed[processed[&quot;readmission_30day&quot;] &gt;= 0].reset_index(drop=True)
+tokens     = eligible[&quot;tokens&quot;].tolist()
+lda_res    = run_lda_pipeline(tokens, config=config)
+bt_model, _, _ = train_bertopic(eligible[&quot;cleaned_text&quot;].tolist(), config=config)
+
+feats      = build_feature_sets(processed, lda_results=lda_res,
+                                bertopic_model=bt_model, config=config,
+                                embedding_matrix=emb_matrix)
+pred       = run_prediction_pipeline(feats, config=config)
+fairness   = run_fairness_audit(pred, processed, config=config)
+shap_res   = run_shap_analysis(pred, feats, config=config)
+
+generate_all_figures(merged_df=df, prediction_results=pred, shap_results=shap_res,
+                     lda_results=lda_res, fairness_results=fairness, config=config)
+
+export_dashboard_json(prediction_results=pred, fairness_results=fairness,
+                      lda_results=lda_res,
+                      readmission_labels=eligible[&quot;readmission_30day&quot;].values)
+</code></pre>
+<h2>2.5 Output layout</h2>
+<p>After a full run:</p>
+<pre><code>results/
+├── figures/                # publication-quality PNGs
+│   ├── demographics.png
+│   ├── roc_curves.png
+│   ├── pr_curves.png
+│   ├── model_comparison.png
+│   ├── confusion_matrices.png
+│   ├── feature_importance.png
+│   ├── topic_word_clouds.png
+│   ├── fairness_group_metrics.png
+│   ├── fairness_disparity.png
+│   ├── shap_summary.png
+│   ├── shap_global_importance.png
+│   └── shap_patient_*.png
+├── models/                 # best + all trained joblib files
+└── exports/                # dashboard JSON
+    ├── results.json
+    ├── fairness.json
+    └── topics.json
+</code></pre>
+<h2>2.6 Common gotchas</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IndexError: tuple index out of range</code> in <code>create_topic_features</code></td>
+<td>You have an old <code>feature_engineer.py</code> cached in the kernel; restart the Jupyter kernel. The current code handles 1-D <code>probs</code> from BERTopic.</td>
+</tr>
+<tr>
+<td><code>OSError: [E050] Can't find model 'en_core_web_sm'</code></td>
+<td>Run <code>python -m spacy download en_core_web_sm</code>.</td>
+</tr>
+<tr>
+<td>BERTopic training raises HDBSCAN errors on ~200 docs</td>
+<td>Already handled: <code>train_bertopic</code> rescales parameters for n&lt;500. If it still fails, set <code>bertopic_model=None</code> in <code>build_feature_sets</code> — the rest of the pipeline skips BERTopic features cleanly.</td>
+</tr>
+<tr>
+<td><code>No trained models found</code> on dashboard startup</td>
+<td>Re-run the notebook through the prediction section so <code>results/models/*.joblib</code> files exist, or accept the mock fallback.</td>
+</tr>
+<tr>
+<td>Notebook is slow on first embedding call</td>
+<td>Hugging Face downloads ClinicalBERT weights (~440 MB) on first use and caches under <code>~/.cache/huggingface/</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>See <code>docs/07-testing.md</code> for troubleshooting individual modules via the test suite.</p>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 3</div>
+  <h1>Pipeline Reference</h1>
+  <p>Module-by-module reference for everything under <code>src/</code>. Functions are listed in the order they appear in each file; names link to the source.</p>
+<hr />
+<h2>3.1 <code>src/generate_synthetic_data.py</code></h2>
+<p>Generates a MIMIC-IV-style cohort locally — no credentialed access required. Writes three CSVs under <code>data/</code>:</p>
+<ul>
+<li><code>synthetic_discharge.csv</code> — discharge summaries with realistic clinical sections</li>
+<li><code>synthetic_admissions.csv</code> — admission/discharge timestamps + insurance + admission_type</li>
+<li><code>synthetic_patients.csv</code> — demographics</li>
+</ul>
+<p>Entry point: <code>run(output_dir="data", n_patients=200)</code> (imported in the notebook as <code>generate_data</code>). Uses <code>random</code> + <code>numpy</code> with a fixed seed (42) so outputs are reproducible.</p>
+<p>Text generation builds each note from category-specific templates (chief complaints, past medical history, meds, social history, hospital course, discharge plan) so LDA/BERTopic actually find meaningful topics at small scale.</p>
+<hr />
+<h2>3.2 <code>src/data_loader.py</code></h2>
+<p>Loads raw tables and produces the merged cohort used everywhere downstream.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>load_discharge_notes</code></td>
+<td>Read CSV, filter to <code>note_type == "Discharge summary"</code>, optional subsample.</td>
+</tr>
+<tr>
+<td><code>load_admissions</code></td>
+<td>Parse admission/discharge timestamps, keep utilization fields.</td>
+</tr>
+<tr>
+<td><code>load_patients</code></td>
+<td>Parse demographics; derives <code>age_group</code>.</td>
+</tr>
+<tr>
+<td><code>create_readmission_label</code></td>
+<td>Compute binary 30-day readmission from consecutive admissions per <code>subject_id</code>.</td>
+</tr>
+<tr>
+<td><code>merge_dataset</code></td>
+<td>Join notes + admissions + patients, produce <code>los_days</code>, <code>num_prior_admissions</code>, etc.</td>
+</tr>
+<tr>
+<td><code>get_data_summary</code></td>
+<td>Print a compact human-readable summary.</td>
+</tr>
+<tr>
+<td><code>load_all</code></td>
+<td>Top-level helper: picks synthetic vs real paths from config and returns the merged frame.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Readmission label semantics.</strong> <code>-1</code> = ineligible (e.g., expired, last admission for the patient, insufficient follow-up). Downstream code filters with <code>processed["readmission_30day"] &gt;= 0</code> before LDA/prediction.</p>
+<hr />
+<h2>3.3 <code>src/preprocess.py</code></h2>
+<p>PHI-aware cleaning, tokenization, and optional scispaCy.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean_clinical_text</code></td>
+<td>Remove MIMIC PHI patterns (<code>[**...**]</code>), dates, excess whitespace, punctuation.</td>
+</tr>
+<tr>
+<td><code>extract_sections</code></td>
+<td>Parse section headers (e.g., <code>History of Present Illness:</code>) into a dict.</td>
+</tr>
+<tr>
+<td><code>remove_sections</code></td>
+<td>Drop sections listed in config (<code>Discharge Medications</code>, etc.) that leak the target.</td>
+</tr>
+<tr>
+<td><code>tokenize_clinical</code></td>
+<td>Tokenize via spaCy (if available) or NLTK, strip clinical stopwords, lemmatize.</td>
+</tr>
+<tr>
+<td><code>create_bigrams_trigrams</code></td>
+<td>Gensim <code>Phrases</code> for medical multi-word terms (<code>heart_failure</code>, <code>atrial_fibrillation</code>).</td>
+</tr>
+<tr>
+<td><code>build_preprocessing_pipeline</code></td>
+<td>End-to-end: clean → section-removal → tokenize → phrases → length filter. Adds <code>cleaned_text</code>, <code>tokens</code>, <code>num_tokens</code> columns.</td>
+</tr>
+<tr>
+<td><code>create_document_term_matrix</code></td>
+<td>Helper for building a Gensim dictionary+corpus used by LDA.</td>
+</tr>
+</tbody>
+</table>
+<h3>Stopwords</h3>
+<p>A union of NLTK English stopwords, a medical-noise list (<code>patient</code>, <code>pt</code>, <code>mg</code>, <code>ml</code>, <code>hospital</code>, <code>admission</code>, <code>discharge</code>, …), and any custom list from <code>preprocessing.custom_stopwords</code> in config.</p>
+<h3>Lazy heavy imports</h3>
+<p>spaCy and NLTK are loaded on first call via <code>_get_spacy()</code> and <code>_ensure_nltk()</code> so <code>import src.preprocess</code> stays cheap for unit tests.</p>
+<hr />
+<h2>3.4 <code>src/embeddings.py</code></h2>
+<p>Dense clinical-text embeddings via Hugging Face transformers.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>load_embedding_model</code></td>
+<td>Load a model + tokenizer from the <code>MODEL_REGISTRY</code> shortcut (<code>clinicalbert</code>, <code>biobert</code>, <code>pubmedbert</code>, <code>bert</code>) or any HF model ID. Auto-selects CUDA.</td>
+</tr>
+<tr>
+<td><code>_embed_single_text</code></td>
+<td>Split a long note into overlapping chunks (<code>max_length=512</code>, <code>stride=256</code>), mean/CLS-pool each chunk, average.</td>
+</tr>
+<tr>
+<td><code>embed_texts</code></td>
+<td>Batch embedder with a tqdm progress bar; returns <code>(n_docs, d)</code> float32 matrix + model metadata.</td>
+</tr>
+<tr>
+<td><code>reduce_embeddings</code></td>
+<td>Optional PCA (default) or UMAP compression to <code>n_components</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why chunking.</strong> Discharge notes routinely exceed BERT's 512-token limit. The function slides a window with configurable stride and averages chunk vectors — a common practice for long clinical documents.</p>
+<p><strong>Defaults</strong> (from <code>config/config.yaml → embeddings</code>): <code>clinicalbert</code>, mean pooling, max_length=512, stride=256, PCA to 50 components.</p>
+<hr />
+<h2>3.5 <code>src/topic_model.py</code></h2>
+<p>Two complementary topic models.</p>
+<h3>LDA</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train_lda</code></td>
+<td>Fit Gensim <code>LdaModel</code> with configurable <code>num_topics</code>, <code>passes</code>, <code>iterations</code>, <code>alpha</code>, <code>eta</code>.</td>
+</tr>
+<tr>
+<td><code>evaluate_coherence</code></td>
+<td><code>CoherenceModel</code> (<code>c_v</code>) over a fitted LDA.</td>
+</tr>
+<tr>
+<td><code>find_optimal_topics</code></td>
+<td>Grid-search topic counts (from <code>lda.num_topics</code> list), pick the one with highest coherence.</td>
+</tr>
+<tr>
+<td><code>get_topic_words</code></td>
+<td>Extract top-N words per topic as <code>{tid: [(word, weight), …]}</code>.</td>
+</tr>
+<tr>
+<td><code>label_topics</code></td>
+<td>Score each topic against <code>CLINICAL_LABEL_KEYWORDS</code> (Cardiovascular, Respiratory, Sepsis, Renal, Neurological, …) and assign the best-matching label.</td>
+</tr>
+<tr>
+<td><code>get_document_topics</code></td>
+<td>Full doc-topic probability matrix <code>(n_docs, n_topics)</code>.</td>
+</tr>
+<tr>
+<td><code>topics_to_dataframe</code></td>
+<td>Pretty summary table for notebooks.</td>
+</tr>
+<tr>
+<td><code>run_lda_pipeline</code></td>
+<td>One-shot wrapper: build corpus → grid-search → label → return <code>lda_results</code> dict.</td>
+</tr>
+</tbody>
+</table>
+<h3>BERTopic</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train_bertopic</code></td>
+<td>BioBERT (<code>dmis-lab/biobert-base-cased-v1.2</code>) + UMAP + HDBSCAN, with a <code>sentence-transformers/all-MiniLM-L6-v2</code> fallback. Auto-scales HDBSCAN/UMAP parameters for small datasets (<code>n &lt; 500</code>) and disables <code>nr_topics='auto'</code> in that regime.</td>
+</tr>
+<tr>
+<td><code>compare_models</code></td>
+<td>Compute coherence and topic diversity for LDA and BERTopic side-by-side.</td>
+</tr>
+<tr>
+<td><code>test_topic_readmission_association</code></td>
+<td>Mann-Whitney U test: for each topic, compare topic-probability distributions between readmitted vs non-readmitted patients. Reports per-topic p-values.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>lda_results</code> schema</h3>
+<pre><code class="language-python">{
+  &quot;best_model&quot;:         LdaModel,
+  &quot;best_num_topics&quot;:    int,
+  &quot;coherence_scores&quot;:   {num_topics: c_v},
+  &quot;topic_words&quot;:        {tid: [(word, weight), ...]},
+  &quot;topic_labels&quot;:       {tid: &quot;Cardiovascular&quot;, ...},
+  &quot;doc_topic_matrix&quot;:   np.ndarray,   # (n_docs, n_topics)
+  &quot;dictionary&quot;:         gensim.corpora.Dictionary,
+  &quot;corpus&quot;:             [[(token_id, count), ...], ...],
+  &quot;topics_df&quot;:          pd.DataFrame,
+}
+</code></pre>
+<hr />
+<h2>3.6 <code>src/feature_engineer.py</code></h2>
+<p>Builds the feature dict consumed by the prediction pipeline.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_tfidf_features</code></td>
+<td>Fits/transforms a <code>TfidfVectorizer</code> with <code>sublinear_tf=True</code> (helps with long notes).</td>
+</tr>
+<tr>
+<td><code>create_topic_features</code></td>
+<td>Document-topic probabilities for LDA <strong>or</strong> BERTopic. Returns <code>(n_docs, n_topics)</code> dense float32. Handles 1-D <code>probs</code> from BERTopic by one-hot encoding topic assignments.</td>
+</tr>
+<tr>
+<td><code>create_structured_features</code></td>
+<td>Age (z-scored), gender, insurance/admission-type one-hots, <code>log1p(los_days)</code>, <code>num_prior_admissions</code>, <code>days_since_last_admission</code>, <code>prior_expire_flag</code>.</td>
+</tr>
+<tr>
+<td><code>create_text_statistics_features</code></td>
+<td>Note length, token count, sentence count, negation count, section count, readability proxies.</td>
+</tr>
+<tr>
+<td><code>combine_features</code></td>
+<td>Sparse-aware horizontal stack (<code>scipy.sparse.hstack</code>) preserving name vectors.</td>
+</tr>
+<tr>
+<td><code>build_feature_sets</code></td>
+<td>Top-level: takes <code>processed_df</code>, optional <code>lda_results</code> / <code>bertopic_model</code> / <code>embedding_matrix</code>, returns the full <code>feature_sets</code> dict used by <code>run_prediction_pipeline</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>feature_sets</code> schema</h3>
+<pre><code class="language-python">{
+  &quot;tfidf&quot;:          {&quot;X&quot;: sparse, &quot;vectorizer&quot;: TfidfVectorizer, &quot;names&quot;: [...]},
+  &quot;topic_lda&quot;:      {&quot;X&quot;: ndarray, &quot;names&quot;: [...]} | None,
+  &quot;topic_bertopic&quot;: {&quot;X&quot;: ndarray, &quot;names&quot;: [...]} | None,
+  &quot;embeddings&quot;:     {&quot;X&quot;: ndarray, &quot;names&quot;: [...]} | None,
+  &quot;structured&quot;:     {&quot;X&quot;: ndarray, &quot;names&quot;: [...]},
+  &quot;text_stats&quot;:     {&quot;X&quot;: ndarray, &quot;names&quot;: [...]},
+  &quot;combined&quot;:       {&quot;X&quot;: sparse,  &quot;names&quot;: [...]},
+  &quot;label&quot;:          ndarray,          # y (readmission_30day, int)
+  &quot;vectorizer&quot;:     TfidfVectorizer,  # duplicate for convenience
+}
+</code></pre>
+<p><strong>Eligibility alignment.</strong> <code>build_feature_sets</code> slices the processed frame with the <code>readmission_30day &gt;= 0</code> mask before building feature matrices — any external inputs (LDA corpus, embedding matrix) are auto-realigned if their row counts differ from the eligible subset.</p>
+<hr />
+<h2>3.7 <code>src/feature_selection.py</code></h2>
+<p>Applied inside <code>run_prediction_pipeline</code> when <code>prediction.feature_selection.enabled = True</code>. Each function returns <code>(indices, selected_names)</code>; <code>apply_selection</code> slices a matrix by indices so train/val/test stay aligned.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>variance_threshold_selection</code></td>
+<td>Drop (near-)constant features via <code>VarianceThreshold</code>.</td>
+</tr>
+<tr>
+<td><code>univariate_selection</code></td>
+<td><code>SelectKBest</code> with <code>chi2</code>, <code>f_classif</code>, or <code>mutual_info_classif</code>.</td>
+</tr>
+<tr>
+<td><code>l1_selection</code></td>
+<td>Fit an L1 Logistic Regression; keep non-zero coefficients.</td>
+</tr>
+<tr>
+<td><code>rfe_selection</code></td>
+<td><code>sklearn.feature_selection.RFE</code> with a LogReg base estimator.</td>
+</tr>
+<tr>
+<td><code>shap_selection</code></td>
+<td>Rank by mean |SHAP|, keep <code>top_k</code>. Trains a lightweight model on a subsample for the scoring.</td>
+</tr>
+<tr>
+<td><code>apply_selection</code></td>
+<td>Slice a feature matrix by an index array (sparse-safe).</td>
+</tr>
+<tr>
+<td><code>select_features</code></td>
+<td>Dispatcher that calls one of the above by <code>method</code> name and returns <code>{X_selected, indices, names, n_before, n_after, method}</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Only feature sets listed in <code>prediction.feature_selection.apply_to</code> (default <code>["tfidf", "combined"]</code>) are reduced — topic/structured/text_stats sets are already low-dimensional.</p>
+<hr />
+<h2>3.8 <code>src/predict.py</code></h2>
+<p>Model training, tuning, evaluation, and the top-level pipeline runner.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>split_data</code></td>
+<td>Stratified train/val/test split with configurable sizes.</td>
+</tr>
+<tr>
+<td><code>apply_smote</code></td>
+<td>SMOTE oversampling on training data (optional, for imbalanced classes).</td>
+</tr>
+<tr>
+<td><code>get_model</code></td>
+<td>Factory for <code>logistic_regression</code>, <code>random_forest</code>, <code>xgboost</code>, <code>lightgbm</code> with class-balanced defaults.</td>
+</tr>
+<tr>
+<td><code>tune_hyperparameters</code></td>
+<td><code>RandomizedSearchCV</code> with stratified k-fold; returns best estimator + best params + CV score.</td>
+</tr>
+<tr>
+<td><code>train_model</code></td>
+<td>Fit a model on <code>(X_train, y_train)</code> with optional SMOTE.</td>
+</tr>
+<tr>
+<td><code>evaluate_model</code></td>
+<td>Accuracy / precision / recall / F1 / ROC-AUC / PR-AUC + confusion matrix.</td>
+</tr>
+<tr>
+<td><code>cross_validate_model</code></td>
+<td>Stratified k-fold CV for the final selected model.</td>
+</tr>
+<tr>
+<td><code>get_feature_importance</code></td>
+<td>Pulls <code>coef_</code> or <code>feature_importances_</code> into a named DataFrame.</td>
+</tr>
+<tr>
+<td><code>save_models</code></td>
+<td>Persist every trained model + mark the best one (<code>*_BEST.joblib</code>).</td>
+</tr>
+<tr>
+<td><code>load_model</code></td>
+<td>Load a joblib file.</td>
+</tr>
+<tr>
+<td><code>find_optimal_threshold</code></td>
+<td>Pick a probability cutoff that maximizes F1 on the validation set.</td>
+</tr>
+<tr>
+<td><code>run_prediction_pipeline</code></td>
+<td>Top-level: for each <code>(feature_type, model)</code> combo, split → optional feature selection → optional tuning → train → evaluate. Returns results, CV scores, best model, tuned params, feature-selection summary, trained models, splits.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>prediction_results</code> schema</h3>
+<pre><code class="language-python">{
+  &quot;results&quot;:           [dict, ...],          # rows of metrics
+  &quot;results_df&quot;:        pd.DataFrame,
+  &quot;best&quot;:              {&quot;model&quot;, &quot;feature_type&quot;, ... metrics ...},
+  &quot;models&quot;:            {(model, feat): fitted_estimator},
+  &quot;splits&quot;:            {feat: {&quot;X_train&quot;, &quot;X_val&quot;, &quot;X_test&quot;, &quot;y_*&quot;, &quot;feature_names&quot;}},
+  &quot;cv_results&quot;:        [dict, ...],
+  &quot;feature_importances&quot;: {(model, feat): DataFrame},
+  &quot;tuned_params&quot;:      {(model, feat): {&quot;best_params&quot;, &quot;cv_score&quot;}},
+  &quot;feature_selection&quot;: {feat: {&quot;method&quot;, &quot;n_before&quot;, &quot;n_after&quot;, &quot;indices&quot;, &quot;names&quot;}},
+  &quot;saved_model_paths&quot;: {(model, feat): Path},
+}
+</code></pre>
+<hr />
+<h2>3.9 <code>src/explainability.py</code></h2>
+<p>SHAP wrappers that pick the right explainer for the model family.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_explainer</code></td>
+<td><code>TreeExplainer</code> for RF/XGBoost/LightGBM; <code>LinearExplainer</code> for Logistic Regression.</td>
+</tr>
+<tr>
+<td><code>compute_shap_values</code></td>
+<td>Run the explainer on <code>X_explain</code>, return a <code>shap.Explanation</code> with a values matrix and base value.</td>
+</tr>
+<tr>
+<td><code>shap_global_importance</code></td>
+<td>Mean |SHAP| per feature → ranked DataFrame.</td>
+</tr>
+<tr>
+<td><code>explain_patient</code></td>
+<td>Per-row top-N contributors sorted by absolute impact.</td>
+</tr>
+<tr>
+<td><code>run_shap_analysis</code></td>
+<td>Orchestrates the above for the best model from <code>prediction_results</code>; returns <code>shap_results</code> dict consumed by <code>visualize.py</code> and the notebook.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3.10 <code>src/fairness.py</code></h2>
+<p>Group-level auditing with Fairlearn.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compute_group_metrics</code></td>
+<td>Per-group: accuracy, precision, recall, F1, FPR, FNR, selection rate (via <code>MetricFrame</code>).</td>
+</tr>
+<tr>
+<td><code>compute_fairness_metrics</code></td>
+<td>Disparity: <code>demographic_parity_difference</code>, <code>equalized_odds_difference</code>, <code>fpr_difference</code>, <code>fnr_difference</code>.</td>
+</tr>
+<tr>
+<td><code>run_fairness_audit</code></td>
+<td>Loop over every protected attribute listed in <code>config.fairness.protected_attributes</code> and run both.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>fairness_results</code> schema</h3>
+<pre><code class="language-python">{
+  &quot;group_metrics&quot;:    {attr: DataFrame},  # per-group metrics table
+  &quot;fairness_metrics&quot;: {attr: {metric: value}},
+  &quot;summary_df&quot;:       DataFrame,          # compact human-readable table
+}
+</code></pre>
+<hr />
+<h2>3.11 <code>src/visualize.py</code></h2>
+<p>Matplotlib+Seaborn plotting with a consistent style. Every <code>plot_*</code> function returns the <code>Figure</code> and writes a PNG under <code>results/figures/</code> via <code>_save_fig</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Output PNG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>plot_demographics</code></td>
+<td><code>demographics.png</code></td>
+</tr>
+<tr>
+<td><code>plot_note_length_distribution</code></td>
+<td><code>note_length_distribution.png</code></td>
+</tr>
+<tr>
+<td><code>plot_coherence_scores</code></td>
+<td><code>coherence_scores.png</code></td>
+</tr>
+<tr>
+<td><code>plot_topic_word_clouds</code></td>
+<td><code>topic_word_clouds.png</code></td>
+</tr>
+<tr>
+<td><code>plot_topic_readmission_heatmap</code></td>
+<td><code>topic_readmission_heatmap.png</code></td>
+</tr>
+<tr>
+<td><code>plot_roc_curves</code></td>
+<td><code>roc_curves.png</code></td>
+</tr>
+<tr>
+<td><code>plot_pr_curves</code></td>
+<td><code>pr_curves.png</code></td>
+</tr>
+<tr>
+<td><code>plot_confusion_matrices</code></td>
+<td><code>confusion_matrices.png</code></td>
+</tr>
+<tr>
+<td><code>plot_model_comparison</code></td>
+<td><code>model_comparison.png</code></td>
+</tr>
+<tr>
+<td><code>plot_feature_importance</code></td>
+<td><code>feature_importance.png</code></td>
+</tr>
+<tr>
+<td><code>plot_fairness_disparity</code></td>
+<td><code>fairness_disparity.png</code></td>
+</tr>
+<tr>
+<td><code>plot_fairness_group_metrics</code></td>
+<td><code>fairness_group_metrics.png</code></td>
+</tr>
+<tr>
+<td><code>plot_shap_global_importance</code></td>
+<td><code>shap_global_importance.png</code></td>
+</tr>
+<tr>
+<td><code>plot_shap_summary</code></td>
+<td><code>shap_summary.png</code></td>
+</tr>
+<tr>
+<td><code>plot_shap_patient_explanation</code></td>
+<td><code>shap_patient_*_top*.png</code></td>
+</tr>
+<tr>
+<td><code>generate_all_figures</code></td>
+<td>Orchestrator — one call to produce everything.</td>
+</tr>
+</tbody>
+</table>
+<p>The backend uses <code>matplotlib.use("Agg")</code> so figures render in headless runs (CI, Docker).</p>
+<hr />
+<h2>3.12 <code>src/exporter.py</code></h2>
+<p>Serializes in-memory pipeline outputs into the three JSON files the dashboard reads.</p>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>build_results_payload</code></td>
+<td>Model comparison rows + best model → <code>results.json</code>.</td>
+</tr>
+<tr>
+<td><code>build_fairness_payload</code></td>
+<td>Per-attribute groups + disparities → <code>fairness.json</code>.</td>
+</tr>
+<tr>
+<td><code>build_topics_payload</code></td>
+<td>LDA topics, words, per-topic readmission rate → <code>topics.json</code>.</td>
+</tr>
+<tr>
+<td><code>export_dashboard_json</code></td>
+<td>Top-level entry — call from a notebook or script after the pipeline finishes. Any missing input skips its file (dashboard falls back to mock data).</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>results/exports/</code> directory is the single contract between the training pipeline and the dashboard. See <code>docs/05-dashboard.md</code>.</p>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 4</div>
+  <h1>Models & Evaluation</h1>
+  <p>This page covers the modeling side of the pipeline: which models are trained, how they're tuned, how feature selection is applied, how explanations are computed, and how fairness is audited.</p>
+<hr />
+<h2>4.1 Models</h2>
+<p><code>src/predict.py</code> trains four classifiers (configurable via <code>prediction.models</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Class</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>logistic_regression</code></td>
+<td><code>sklearn.linear_model.LogisticRegression</code></td>
+<td><code>solver="saga"</code>, <code>penalty="l2"</code>, <code>C=1.0</code>, <code>class_weight="balanced"</code>, <code>max_iter=1000</code></td>
+</tr>
+<tr>
+<td><code>random_forest</code></td>
+<td><code>sklearn.ensemble.RandomForestClassifier</code></td>
+<td><code>n_estimators=200</code>, <code>min_samples_leaf=5</code>, <code>class_weight="balanced"</code></td>
+</tr>
+<tr>
+<td><code>xgboost</code></td>
+<td><code>xgboost.XGBClassifier</code></td>
+<td><code>n_estimators=200</code>, <code>max_depth=6</code>, <code>learning_rate=0.1</code>, <code>eval_metric="logloss"</code></td>
+</tr>
+<tr>
+<td><code>lightgbm</code></td>
+<td><code>lightgbm.LGBMClassifier</code></td>
+<td><code>n_estimators=200</code>, <code>num_leaves=31</code>, <code>is_unbalance=True</code></td>
+</tr>
+</tbody>
+</table>
+<p>All estimators use <code>n_jobs=1</code> on Windows to avoid an OOM / fork issue that surfaced during development — see commit <code>62922ed</code>. This is safe because <code>RandomizedSearchCV</code> already parallelizes across folds.</p>
+<h3>Class imbalance</h3>
+<p>Three knobs, any combination of which can be active:</p>
+<ol>
+<li><strong><code>class_weight="balanced"</code></strong> on logistic regression and RF</li>
+<li><strong><code>is_unbalance=True</code></strong> on LightGBM</li>
+<li><strong>SMOTE</strong> via <code>apply_smote</code> in <code>src/predict.py:89</code> — applied only to the training split inside <code>train_model</code> when enabled</li>
+</ol>
+<p>The pipeline defaults rely on class weights / <code>is_unbalance</code>, which is cheaper than SMOTE on sparse TF-IDF matrices.</p>
+<hr />
+<h2>4.2 Feature sets that get trained</h2>
+<p>Controlled by <code>prediction.feature_types</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Where built</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tfidf</code></td>
+<td><code>create_tfidf_features</code></td>
+<td>Sparse n-gram bag-of-words, <code>max_features=5000</code>, <code>ngram_range=(1,2)</code>, <code>sublinear_tf=True</code></td>
+</tr>
+<tr>
+<td><code>topic_distribution</code></td>
+<td><code>create_topic_features(..., "lda")</code></td>
+<td>Dense LDA doc-topic probabilities</td>
+</tr>
+<tr>
+<td><code>topic_bertopic</code></td>
+<td><code>create_topic_features(..., "bertopic")</code></td>
+<td>Dense BERTopic distribution (or one-hot fallback)</td>
+</tr>
+<tr>
+<td><code>embeddings</code></td>
+<td><code>embeddings.embed_texts</code> + optional PCA</td>
+<td>Dense clinical-BERT vectors</td>
+</tr>
+<tr>
+<td><code>structured</code></td>
+<td><code>create_structured_features</code></td>
+<td>Dense demographics + utilization</td>
+</tr>
+<tr>
+<td><code>text_stats</code></td>
+<td><code>create_text_statistics_features</code></td>
+<td>Dense note-level statistics</td>
+</tr>
+<tr>
+<td><code>combined</code></td>
+<td><code>combine_features</code></td>
+<td>Sparse hstack of TF-IDF + structured + text_stats</td>
+</tr>
+</tbody>
+</table>
+<p>For every <code>(feature_type, model)</code> pair, the pipeline computes accuracy, precision, recall, F1, ROC-AUC, PR-AUC on the held-out test set and picks the best by the configured scoring metric (default ROC-AUC).</p>
+<hr />
+<h2>4.3 Hyperparameter tuning</h2>
+<p>Controlled by <code>prediction.tuning</code>:</p>
+<pre><code class="language-yaml">tuning:
+  enabled: true
+  n_iter: 30           # random draws from PARAM_GRIDS
+  cv_folds: 5
+  scoring: &quot;roc_auc&quot;
+</code></pre>
+<p><code>RandomizedSearchCV</code> is run inside <code>tune_hyperparameters</code> with a stratified k-fold. The chosen grids live in <code>PARAM_GRIDS</code> at <code>src/predict.py:185</code>; each grid spans the typical useful range per model (e.g., <code>C</code> across four orders of magnitude for LogReg, <code>max_depth</code> 3–10 for XGBoost).</p>
+<p>The best estimator is refit on the full train split, then evaluated on val/test. The winning params + CV score land in <code>prediction_results["tuned_params"]</code> keyed by <code>(model, feature_type)</code>.</p>
+<hr />
+<h2>4.4 Feature selection</h2>
+<p>Controlled by <code>prediction.feature_selection</code>:</p>
+<pre><code class="language-yaml">feature_selection:
+  enabled: true
+  method: &quot;univariate&quot;          # variance | univariate | l1 | rfe | shap
+  apply_to: [&quot;tfidf&quot;, &quot;combined&quot;]
+  k: 200                        # univariate only
+  score_func: &quot;f_classif&quot;       # univariate only
+  # threshold: 0.0              # variance
+  # C: 1.0                      # l1
+  # n_features_to_select: 50    # rfe
+  # top_k: 50                   # shap
+</code></pre>
+<p><strong>How it wires in.</strong> Inside <code>run_prediction_pipeline</code>, for every feature type listed in <code>apply_to</code>:</p>
+<ol>
+<li>Split <code>(X, y)</code> into train/val/test (stratified).</li>
+<li>Call <code>select_features</code> on <strong>train only</strong> — never on val/test — to fit the selector.</li>
+<li>Apply the resulting <code>indices</code> to val and test via <code>apply_selection</code> so the columns stay aligned.</li>
+<li>Replace <code>feat_names</code> with the selected names.</li>
+<li>Record <code>{method, n_before, n_after, indices, names}</code> under <code>prediction_results["feature_selection"][feature_type]</code>.</li>
+</ol>
+<p>Failures are caught and logged — if, say, L1 eliminates everything on a pathological split, the pipeline falls back to the unreduced features and keeps going.</p>
+<p>Why limit it to TF-IDF and combined? Those are the only high-dimensional sets; topic distributions and structured features already have &lt;30 columns.</p>
+<h3>Methods cheat-sheet</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When it helps</th>
+<th>Caveats</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>variance</code></td>
+<td>Quickly prune constant / near-constant cols from TF-IDF on small vocab</td>
+<td>No supervision signal</td>
+</tr>
+<tr>
+<td><code>univariate</code> (<code>f_classif</code>)</td>
+<td>Default. Fast, label-aware, works for sparse TF-IDF</td>
+<td>Assumes features are roughly independent of each other</td>
+</tr>
+<tr>
+<td><code>univariate</code> (<code>chi2</code>)</td>
+<td>Alt for non-negative features</td>
+<td>Requires non-negative matrix (fine for TF-IDF)</td>
+</tr>
+<tr>
+<td><code>l1</code></td>
+<td>Sparse logistic regression as selector</td>
+<td>Unstable on very wide matrices with tiny samples</td>
+</tr>
+<tr>
+<td><code>rfe</code></td>
+<td>Exhaustive ranking via repeated model fitting</td>
+<td>Slow — O(n_features × k)</td>
+</tr>
+<tr>
+<td><code>shap</code></td>
+<td>Use a trained model's attributions as selector</td>
+<td>Expensive; trains a model just for selection</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4.5 Evaluation metrics</h2>
+<p>Every row of <code>prediction_results["results_df"]</code> has:</p>
+<ul>
+<li><strong>accuracy / precision / recall / F1</strong> — at a 0.5 threshold (or an optimized threshold from <code>find_optimal_threshold</code> if you use it downstream)</li>
+<li><strong>ROC-AUC</strong> — threshold-free ranking quality, robust to class imbalance</li>
+<li><strong>PR-AUC (average precision)</strong> — more informative than ROC-AUC when the positive class is rare</li>
+</ul>
+<p>The best model is selected by <code>prediction.tuning.scoring</code> (default ROC-AUC). Inspect <code>prediction_results["cv_results"]</code> to see the CV performance of the winning model vs. the test performance — a big gap flags overfitting, which is easy to hit on ~200 synthetic notes.</p>
+<hr />
+<h2>4.6 SHAP explainability</h2>
+<p><code>src/explainability.py</code> picks an explainer automatically:</p>
+<ul>
+<li><strong>Tree models</strong> (RF, XGBoost, LightGBM) → <code>shap.TreeExplainer</code> — fast, exact</li>
+<li><strong>Logistic Regression</strong> → <code>shap.LinearExplainer</code></li>
+</ul>
+<h3>What <code>run_shap_analysis</code> returns</h3>
+<pre><code class="language-python">{
+  &quot;model_name&quot;:        &quot;xgboost&quot;,
+  &quot;feature_type&quot;:      &quot;combined&quot;,
+  &quot;base_value&quot;:        float,
+  &quot;global_importance&quot;: pd.DataFrame,   # feature, mean_abs_shap
+  &quot;shap_values&quot;:       np.ndarray,     # (n_explain, n_features)
+  &quot;X_explain&quot;:         np.ndarray,     # samples used for the explanation
+  &quot;feature_names&quot;:     [str, ...],
+  &quot;patient_examples&quot;:  [                # top-N risk patients
+      {&quot;patient_idx&quot;, &quot;base_value&quot;, &quot;predicted_logit&quot;, &quot;top_contributors&quot;: [...]},
+      ...
+  ],
+}
+</code></pre>
+<p>The notebook prints the global top-20 features (surface in <code>results/figures/shap_global_importance.png</code>) and three per-patient breakdowns (<code>shap_patient_*.png</code>). These figures also flow into the dashboard's <code>/explain</code> page.</p>
+<h3>Reading SHAP outputs clinically</h3>
+<ul>
+<li>A positive SHAP value <strong>pushes</strong> the prediction toward "readmitted"; negative pulls away.</li>
+<li><code>base_value</code> is the model's average log-odds — the starting point before any feature contributes.</li>
+<li>For TF-IDF features, the "feature" is an n-gram. If <code>sepsis</code> has a high positive SHAP, the model learned that mentioning sepsis increases 30-day risk.</li>
+<li>Watch out for data-leakage n-grams like <code>follow up in</code> or <code>discharge</code> — this is why <code>preprocessing.remove_sections</code> strips <code>Discharge *</code> sections.</li>
+</ul>
+<hr />
+<h2>4.7 Fairness audit</h2>
+<p><code>src/fairness.py</code> uses Fairlearn and loops over every attribute in <code>config.fairness.protected_attributes</code> (default: <code>gender</code>, <code>insurance</code>, <code>age_group</code>).</p>
+<h3>Per-group metrics (via <code>MetricFrame</code>)</h3>
+<p>For each group inside each attribute:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accuracy</td>
+<td>Overall correctness in the group</td>
+</tr>
+<tr>
+<td>precision</td>
+<td>Of predicted readmits in the group, how many were actual readmits</td>
+</tr>
+<tr>
+<td>recall</td>
+<td>Of actual readmits in the group, how many were caught</td>
+</tr>
+<tr>
+<td>f1</td>
+<td>Harmonic mean of precision and recall</td>
+</tr>
+<tr>
+<td>fpr</td>
+<td>False positive rate</td>
+</tr>
+<tr>
+<td>fnr</td>
+<td>False negative rate (from <code>1 - recall</code>)</td>
+</tr>
+<tr>
+<td>selection_rate</td>
+<td>Fraction predicted positive (used for demographic parity)</td>
+</tr>
+</tbody>
+</table>
+<h3>Disparity metrics</h3>
+<p>For the attribute as a whole:</p>
+<ul>
+<li><strong>demographic_parity_difference</strong> — max − min of selection rate across groups</li>
+<li><strong>equalized_odds_difference</strong> — max group-level disparity in TPR or FPR</li>
+<li><strong>fpr_difference / fnr_difference</strong> — explicit gaps</li>
+</ul>
+<h3>What to look at</h3>
+<ul>
+<li><strong>Large <code>fnr_difference</code> on <code>insurance</code></strong> → the model misses readmissions more often for certain insurance types. High-stakes failure mode.</li>
+<li><strong>Large <code>demographic_parity_difference</code> on <code>gender</code></strong> → raw flag rates differ between genders. Not automatically bad (base rates may differ), but worth pairing with equalized odds.</li>
+<li><strong>Small sample sizes on synthetic data</strong> make many of these metrics noisy — take the synthetic-run numbers as a smoke test, not a verdict.</li>
+</ul>
+<p>The audit is post-hoc: we currently don't apply in-training mitigation. If you need that, wrap models with Fairlearn's <code>ExponentiatedGradient</code> reduction or add a <code>ThresholdOptimizer</code> on the held-out set.</p>
+<hr />
+<h2>4.8 Where to look next</h2>
+<ul>
+<li><strong>Notebook</strong> — <code>notebooks/full_pipeline.ipynb</code> sections 5, 6, 6.5 walk through the prediction results, fairness audit, and SHAP explanations interactively.</li>
+<li><strong>Tests</strong> — <code>tests/test_pipeline.py</code> sections 4, 4.5, 4.6, 5 cover the prediction pipeline, SHAP, feature selection, and fairness.</li>
+<li><strong>Config reference</strong> — <code>docs/06-configuration.md</code> has every knob and its default.</li>
+</ul>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 5</div>
+  <h1>Dashboard</h1>
+  <p>The dashboard is a self-contained web app that visualizes the pipeline outputs and optionally runs interactive predictions. It has two halves:</p>
+<ul>
+<li><strong>Backend</strong> — <code>dashboard/backend/</code> — FastAPI app that serves JSON API routes <strong>and</strong> mounts the frontend as static files.</li>
+<li><strong>Frontend</strong> — <code>dashboard/frontend/</code> — plain HTML/CSS/JS pages (no build step) that fetch the API via <code>js/api.js</code>.</li>
+</ul>
+<p>Everything the UI shows comes from <code>results/exports/*.json</code> (written by the exporter) or from a live prediction against the best joblib model. If either is missing, each endpoint falls back to a mock response so the dashboard never crashes.</p>
+<hr />
+<h2>5.1 Running it</h2>
+<pre><code class="language-bash"># from the project root, with venv activated
+uvicorn dashboard.backend.main:app --reload --port 8000
+</code></pre>
+<p>Open http://localhost:8000/. The FastAPI app mounts the frontend directory at <code>/</code>, so <code>index.html</code> is served automatically.</p>
+<h3>What needs to be in place for a "real" (non-mock) run</h3>
+<table>
+<thead>
+<tr>
+<th>Needs to exist</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>results/exports/results.json</code></td>
+<td><code>exporter.export_dashboard_json(prediction_results=...)</code></td>
+</tr>
+<tr>
+<td><code>results/exports/fairness.json</code></td>
+<td><code>exporter.export_dashboard_json(fairness_results=...)</code></td>
+</tr>
+<tr>
+<td><code>results/exports/topics.json</code></td>
+<td><code>exporter.export_dashboard_json(lda_results=..., readmission_labels=...)</code></td>
+</tr>
+<tr>
+<td><code>results/models/*.joblib</code></td>
+<td><code>predict.save_models(...)</code> (called by the notebook via <code>run_prediction_pipeline</code>)</td>
+</tr>
+<tr>
+<td><code>results/figures/*.png</code></td>
+<td><code>visualize.generate_all_figures(...)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Run the full notebook once and all of these materialize.</p>
+<hr />
+<h2>5.2 Backend layout</h2>
+<pre><code>dashboard/backend/
+├── __init__.py
+├── main.py          # FastAPI app, routes, static mount
+├── inference.py     # ModelRegistry, predict(), explain()
+└── schemas.py       # Pydantic request/response models
+</code></pre>
+<h3><code>main.py</code></h3>
+<ul>
+<li>Creates the <code>FastAPI</code> app with permissive CORS.</li>
+<li>On startup, calls <code>inference.registry.load()</code> to discover the best joblib under <code>results/models/</code>.</li>
+<li>Mounts <code>dashboard/frontend/</code> as <code>StaticFiles</code> (HTML=True so <code>index.html</code> is served at <code>/</code>).</li>
+<li>Defines the API routes below.</li>
+</ul>
+<h3><code>inference.py</code></h3>
+<ul>
+<li><code>ModelRegistry</code> — lazy, caches the best model in memory. <code>discover_best()</code> looks for <code>*_BEST.joblib</code>, falling back to any joblib in the directory. Parses the filename (<code>{model}__{feature}__BEST.joblib</code>) into <code>{model_name, feature_type}</code>.</li>
+<li><code>predict(text, age, gender, insurance, los_days)</code> — builds a single-row structured feature vector in the exact column order used during training and calls <code>predict_proba</code>. For text-based feature types the vectorizer isn't persisted yet, so the current implementation falls back to the structured vector and, failing that, a bounded length-based heuristic. <strong>Treat live text predictions as demonstrative, not clinical.</strong></li>
+<li><code>explain(...)</code> — builds the same feature vector, calls <code>compute_shap_values</code> + <code>explain_patient</code>, returns the top-N contributors with their SHAP values and direction.</li>
+<li><code>load_results_json / load_fairness_json / load_topics_json</code> — read-through cache for the exported JSON files, with mock fallbacks.</li>
+</ul>
+<h3><code>schemas.py</code></h3>
+<p>Pydantic models for request/response bodies. The ones worth knowing:</p>
+<ul>
+<li><code>PredictRequest</code> — <code>text</code>, plus optional <code>age</code>, <code>gender</code>, <code>insurance</code>, <code>los_days</code>.</li>
+<li><code>PredictResponse</code> — <code>probability</code>, <code>predicted_label</code>, <code>risk_level</code> ∈ {low, moderate, high}, <code>model_name</code>, <code>feature_type</code>, <code>threshold</code>.</li>
+<li><code>ExplainResponse</code> — <code>probability</code>, <code>base_value</code>, <code>top_features[]</code> (<code>feature</code>, <code>value</code>, <code>shap</code>, <code>direction</code>), <code>model_name</code>.</li>
+<li><code>FairnessResponse</code>, <code>TopicsResponse</code>, <code>ResultsResponse</code> mirror the shapes produced by <code>src/exporter.py</code>.</li>
+</ul>
+<hr />
+<h2>5.3 API reference</h2>
+<p>All endpoints are prefixed with <code>/api</code>. Static frontend files are served under <code>/</code>.</p>
+<h3><code>GET /api/health</code></h3>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;models_loaded&quot;: 4,
+  &quot;available_results&quot;: true
+}
+</code></pre>
+<p>Use this to confirm the backend started correctly and that the exported JSON + models are visible.</p>
+<h3><code>GET /api/models</code></h3>
+<p>Lists every joblib in <code>results/models/</code>:</p>
+<pre><code class="language-json">{
+  &quot;models&quot;: [
+    {&quot;model&quot;: &quot;xgboost&quot;, &quot;feature_type&quot;: &quot;combined&quot;, &quot;is_best&quot;: true,
+     &quot;path&quot;: &quot;results/models/xgboost__combined__BEST.joblib&quot;, &quot;size_kb&quot;: 1234.5},
+    ...
+  ]
+}
+</code></pre>
+<h3><code>POST /api/predict</code></h3>
+<p>Request:</p>
+<pre><code class="language-json">{
+  &quot;text&quot;: &quot;Patient admitted with acute CHF exacerbation ...&quot;,
+  &quot;age&quot;: 72,
+  &quot;gender&quot;: &quot;M&quot;,
+  &quot;insurance&quot;: &quot;Medicare&quot;,
+  &quot;los_days&quot;: 6.5
+}
+</code></pre>
+<p>Response:</p>
+<pre><code class="language-json">{
+  &quot;probability&quot;: 0.6431,
+  &quot;predicted_label&quot;: 1,
+  &quot;risk_level&quot;: &quot;high&quot;,
+  &quot;model_name&quot;: &quot;xgboost&quot;,
+  &quot;feature_type&quot;: &quot;structured&quot;,
+  &quot;threshold&quot;: 0.5
+}
+</code></pre>
+<h3><code>POST /api/explain</code></h3>
+<p>Same request body as <code>/api/predict</code>. Response:</p>
+<pre><code class="language-json">{
+  &quot;probability&quot;: 0.6431,
+  &quot;base_value&quot;: -0.21,
+  &quot;top_features&quot;: [
+    {&quot;feature&quot;: &quot;log_los&quot;, &quot;value&quot;: 1.9, &quot;shap&quot;: 0.31, &quot;direction&quot;: &quot;increases&quot;},
+    {&quot;feature&quot;: &quot;age&quot;, &quot;value&quot;: 72, &quot;shap&quot;: 0.14, &quot;direction&quot;: &quot;increases&quot;},
+    ...
+  ],
+  &quot;model_name&quot;: &quot;xgboost&quot;
+}
+</code></pre>
+<h3><code>GET /api/results</code></h3>
+<p>Serves <code>results/exports/results.json</code>. Consumed by the Overview and Compare pages.</p>
+<h3><code>GET /api/fairness</code></h3>
+<p>Serves <code>results/exports/fairness.json</code>. Consumed by the Fairness page.</p>
+<h3><code>GET /api/topics</code></h3>
+<p>Serves <code>results/exports/topics.json</code>. Consumed by the Topics page.</p>
+<h3><code>GET /api/figures</code></h3>
+<p>Lists PNGs in <code>results/figures/</code>:</p>
+<pre><code class="language-json">{
+  &quot;figures&quot;: [
+    {&quot;name&quot;: &quot;roc_curves&quot;, &quot;filename&quot;: &quot;roc_curves.png&quot;, &quot;url&quot;: &quot;/api/figures/roc_curves.png&quot;},
+    ...
+  ]
+}
+</code></pre>
+<h3><code>GET /api/figures/{filename}</code></h3>
+<p>Streams a single PNG from <code>results/figures/</code> with <code>media_type="image/png"</code>. Returns 404 if missing.</p>
+<hr />
+<h2>5.4 Frontend layout</h2>
+<pre><code>dashboard/frontend/
+├── index.html          # Overview page (entry point)
+├── compare.html        # Model comparison
+├── fairness.html       # Per-attribute fairness tables + charts
+├── topics.html         # LDA topics + readmission rates
+├── predict.html        # Live prediction form
+├── explain.html        # SHAP explanation view
+├── css/
+│   ├── reset.css
+│   ├── variables.css   # Color + typography tokens
+│   ├── layout.css
+│   └── components.css
+└── js/
+    ├── api.js          # fetch wrapper around /api/*
+    ├── sidebar.js      # Sidebar navigation
+    ├── charts.js       # Chart.js helpers
+    └── pages/
+        ├── overview.js
+        ├── compare.js
+        ├── fairness.js
+        ├── topics.js
+        ├── predict.js
+        └── explain.js
+</code></pre>
+<h3>Stack notes</h3>
+<ul>
+<li><strong>No build step.</strong> Plain HTML/CSS/JS. Open a page in the browser (served via FastAPI) and it works.</li>
+<li><strong>Charting.</strong> Chart.js 4.4.1 loaded from jsDelivr in every HTML file.</li>
+<li><strong>Icons.</strong> Lucide (umd build) via unpkg.</li>
+<li><strong>Fonts.</strong> Inter + JetBrains Mono via Google Fonts.</li>
+<li><strong>API base URL.</strong> Defined in <code>js/api.js</code>; because the frontend is served by the same FastAPI app, it uses relative <code>/api/*</code> paths.</li>
+</ul>
+<h3>Page → endpoint mapping</h3>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Endpoints used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>index.html</code> (Overview)</td>
+<td><code>/api/health</code>, <code>/api/results</code>, <code>/api/figures</code></td>
+</tr>
+<tr>
+<td><code>compare.html</code></td>
+<td><code>/api/results</code></td>
+</tr>
+<tr>
+<td><code>fairness.html</code></td>
+<td><code>/api/fairness</code>, <code>/api/figures</code></td>
+</tr>
+<tr>
+<td><code>topics.html</code></td>
+<td><code>/api/topics</code>, <code>/api/figures</code></td>
+</tr>
+<tr>
+<td><code>predict.html</code></td>
+<td><code>/api/predict</code></td>
+</tr>
+<tr>
+<td><code>explain.html</code></td>
+<td><code>/api/explain</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>5.5 Extending the dashboard</h2>
+<ul>
+<li><strong>Add a metric to the Overview page.</strong> Add it to <code>build_results_payload</code> in <code>src/exporter.py</code>, re-run the notebook (or just <code>exporter.export_dashboard_json(...)</code>), then render it in <code>js/pages/overview.js</code>.</li>
+<li><strong>Add a new protected attribute.</strong> Add it to <code>config.fairness.protected_attributes</code>. <code>run_fairness_audit</code> picks it up automatically, <code>build_fairness_payload</code> serializes it, and the Fairness page renders whatever attributes it receives.</li>
+<li><strong>Persist TF-IDF vectorizer for live text predictions.</strong> Currently <code>dashboard/backend/inference.py</code> only builds structured features for live prediction. Serialize the fitted vectorizer alongside the model in <code>predict.save_models</code>, load it in <code>ModelRegistry</code>, and branch on <code>feat_type == "tfidf"</code> to transform the incoming text before <code>predict_proba</code>.</li>
+<li><strong>Add a new page.</strong> Create <code>dashboard/frontend/newpage.html</code>, a <code>js/pages/newpage.js</code>, and a FastAPI route if you need a new data source.</li>
+</ul>
+<hr />
+<h2>5.6 Security / deployment caveats</h2>
+<ul>
+<li>CORS is wildcarded (<code>allow_origins=["*"]</code>) for local development. Narrow this before exposing the app beyond localhost.</li>
+<li>Predictions are demonstrative on synthetic data. The dashboard is <strong>not</strong> a medical device and <strong>must not</strong> drive real clinical decisions without separate validation.</li>
+<li><code>results/exports/</code> and <code>results/models/</code> contain only aggregate metrics and trained weights — no patient text — but treat them as sensitive anyway if they came from real MIMIC-IV data.</li>
+</ul>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 6</div>
+  <h1>Configuration Reference</h1>
+  <p>Everything the pipeline reads from disk is centralized in <code>config/config.yaml</code>. This page lists every top-level section, its keys, defaults, and what changing them does.</p>
+<p>The config is loaded once in the notebook and passed as a plain <code>dict</code> to every module — no magic, no env vars.</p>
+<pre><code class="language-python">import yaml
+config = yaml.safe_load(open(&quot;config/config.yaml&quot;))
+</code></pre>
+<hr />
+<h2>6.1 <code>data:</code></h2>
+<p>Paths to the raw tables and global sampling knobs.</p>
+<pre><code class="language-yaml">data:
+  mimic_notes_path:          &quot;data/discharge.csv&quot;
+  mimic_admissions_path:     &quot;data/admissions.csv&quot;
+  mimic_patients_path:       &quot;data/patients.csv&quot;
+  synthetic_notes_path:      &quot;data/synthetic_discharge.csv&quot;
+  synthetic_admissions_path: &quot;data/synthetic_admissions.csv&quot;
+  synthetic_patients_path:   &quot;data/synthetic_patients.csv&quot;
+  sample_size:               50000
+  random_seed:               42
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mimic_*_path</code></td>
+<td>Paths used when <code>load_all(use_synthetic=False)</code>. Point at your real MIMIC-IV CSVs.</td>
+</tr>
+<tr>
+<td><code>synthetic_*_path</code></td>
+<td>Paths used when <code>use_synthetic=True</code>. The generator writes to these.</td>
+</tr>
+<tr>
+<td><code>sample_size</code></td>
+<td>If set, <code>load_discharge_notes</code> randomly samples this many notes. Set <code>null</code> (or remove) to disable.</td>
+</tr>
+<tr>
+<td><code>random_seed</code></td>
+<td>Global seed for sampling and splits.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.2 <code>preprocessing:</code></h2>
+<pre><code class="language-yaml">preprocessing:
+  min_note_length: 100
+  max_note_length: 50000
+  remove_sections:
+    - &quot;Discharge Medications&quot;
+    - &quot;Discharge Disposition&quot;
+    - &quot;Discharge Diagnosis&quot;
+    - &quot;Discharge Condition&quot;
+  custom_stopwords:
+    - &quot;patient&quot;
+    - &quot;pt&quot;
+    - &quot;history&quot;
+    - &quot;mg&quot;
+    - &quot;ml&quot;
+    - &quot;dr&quot;
+    - &quot;hospital&quot;
+    - &quot;admission&quot;
+    - &quot;discharge&quot;
+    - &quot;date&quot;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_note_length</code></td>
+<td>Drops notes shorter than this many characters (too short to be useful).</td>
+</tr>
+<tr>
+<td><code>max_note_length</code></td>
+<td>Truncates extremely long notes before tokenization to bound memory.</td>
+</tr>
+<tr>
+<td><code>remove_sections</code></td>
+<td>Headers whose bodies are removed by <code>remove_sections</code> in preprocess. Default list strips discharge-planning sections that leak the outcome.</td>
+</tr>
+<tr>
+<td><code>custom_stopwords</code></td>
+<td>Domain-specific tokens to drop on top of NLTK English stopwords.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.3 <code>topic_modeling:</code></h2>
+<p>Two independent sub-blocks for LDA and BERTopic.</p>
+<h3>6.3.1 <code>topic_modeling.lda</code></h3>
+<pre><code class="language-yaml">lda:
+  num_topics: [5, 10, 15, 20]
+  passes: 15
+  iterations: 100
+  chunksize: 2000
+  eval_every: null
+  alpha: &quot;auto&quot;
+  eta: &quot;auto&quot;
+  best_num_topics: null
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>num_topics</code></td>
+<td>Grid of topic counts to search. <code>find_optimal_topics</code> picks the one with the highest <code>c_v</code> coherence.</td>
+</tr>
+<tr>
+<td><code>passes</code></td>
+<td>Full passes over the corpus during training.</td>
+</tr>
+<tr>
+<td><code>iterations</code></td>
+<td>Max iterations per document during inference.</td>
+</tr>
+<tr>
+<td><code>chunksize</code></td>
+<td>Number of documents processed at a time. Bigger = faster but more memory.</td>
+</tr>
+<tr>
+<td><code>eval_every</code></td>
+<td>Gensim perplexity logging interval (<code>null</code> disables).</td>
+</tr>
+<tr>
+<td><code>alpha</code>, <code>eta</code></td>
+<td>Dirichlet priors. <code>"auto"</code> learns them.</td>
+</tr>
+<tr>
+<td><code>best_num_topics</code></td>
+<td>If set, skips the coherence grid and trains only this topic count.</td>
+</tr>
+</tbody>
+</table>
+<h3>6.3.2 <code>topic_modeling.bertopic</code></h3>
+<pre><code class="language-yaml">bertopic:
+  embedding_model: &quot;dmis-lab/biobert-base-cased-v1.2&quot;
+  min_topic_size: 50
+  nr_topics: &quot;auto&quot;
+  top_n_words: 15
+  umap_n_neighbors: 15
+  umap_n_components: 5
+  umap_min_dist: 0.0
+  hdbscan_min_cluster_size: 50
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>embedding_model</code></td>
+<td>Hugging Face model ID for document embeddings. Falls back to <code>all-MiniLM-L6-v2</code> if it can't be loaded.</td>
+</tr>
+<tr>
+<td><code>min_topic_size</code></td>
+<td>Minimum documents per topic. Auto-rescaled when n_docs &lt; 500.</td>
+</tr>
+<tr>
+<td><code>nr_topics</code></td>
+<td><code>"auto"</code> for automatic reduction, integer for a fixed count, or <code>null</code> to disable. Auto-disabled when n_docs &lt; 500.</td>
+</tr>
+<tr>
+<td><code>top_n_words</code></td>
+<td>Top-N words stored per topic.</td>
+</tr>
+<tr>
+<td><code>umap_*</code></td>
+<td>UMAP dimensionality reduction parameters.</td>
+</tr>
+<tr>
+<td><code>hdbscan_min_cluster_size</code></td>
+<td>Minimum HDBSCAN cluster size. Auto-rescaled for small datasets.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.4 <code>embeddings:</code></h2>
+<pre><code class="language-yaml">embeddings:
+  model_name:       &quot;clinicalbert&quot;   # clinicalbert | biobert | pubmedbert | bert | HF ID
+  pooling:          &quot;mean&quot;           # mean (recommended) | cls
+  max_length:       512
+  stride:           256
+  reduce_dims:      true
+  n_components:     50
+  reduction_method: &quot;pca&quot;            # pca | umap
+  device:           null             # null = auto (cuda if available)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>model_name</code></td>
+<td>Shortcut from <code>MODEL_REGISTRY</code> in <code>src/embeddings.py</code>, or any HF model ID.</td>
+</tr>
+<tr>
+<td><code>pooling</code></td>
+<td>Chunk-level pooling strategy. <code>mean</code> is the default because CLS tokens in clinical-BERT variants are less informative for long notes.</td>
+</tr>
+<tr>
+<td><code>max_length</code></td>
+<td>BERT max tokens per chunk. Stay ≤ 512 unless you switch to a long-context model.</td>
+</tr>
+<tr>
+<td><code>stride</code></td>
+<td>Overlap between chunks when a note exceeds <code>max_length</code>.</td>
+</tr>
+<tr>
+<td><code>reduce_dims</code></td>
+<td>If true, run PCA/UMAP after embedding.</td>
+</tr>
+<tr>
+<td><code>n_components</code></td>
+<td>Target dimension after reduction.</td>
+</tr>
+<tr>
+<td><code>reduction_method</code></td>
+<td><code>"pca"</code> (default, deterministic) or <code>"umap"</code> (nonlinear).</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td><code>"cuda"</code>, <code>"cpu"</code>, or <code>null</code> to auto-detect.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.5 <code>prediction:</code></h2>
+<p>The big one. Controls models, splits, tuning, feature selection, and TF-IDF.</p>
+<pre><code class="language-yaml">prediction:
+  target: &quot;readmission_30day&quot;
+  test_size: 0.2
+  val_size: 0.1
+  models:
+    - &quot;logistic_regression&quot;
+    - &quot;random_forest&quot;
+    - &quot;xgboost&quot;
+    - &quot;lightgbm&quot;
+  feature_types:
+    - &quot;tfidf&quot;
+    - &quot;topic_distribution&quot;
+    - &quot;structured&quot;
+    - &quot;embeddings&quot;
+    - &quot;combined&quot;
+  tuning:
+    enabled: true
+    n_iter: 30
+    cv_folds: 5
+    scoring: &quot;roc_auc&quot;
+  feature_selection:
+    enabled: true
+    method: &quot;univariate&quot;
+    apply_to: [&quot;tfidf&quot;, &quot;combined&quot;]
+    k: 200
+    score_func: &quot;f_classif&quot;
+  tfidf:
+    max_features: 5000
+    ngram_range: [1, 2]
+    min_df: 5
+    max_df: 0.95
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>target</code></td>
+<td><code>readmission_30day</code></td>
+<td>Label column; currently the only supported task.</td>
+</tr>
+<tr>
+<td><code>test_size</code></td>
+<td><code>0.2</code></td>
+<td>Final holdout fraction.</td>
+</tr>
+<tr>
+<td><code>val_size</code></td>
+<td><code>0.1</code></td>
+<td>Validation fraction (cut from the remaining 80%).</td>
+</tr>
+<tr>
+<td><code>models</code></td>
+<td>4-model list</td>
+<td>Any subset of <code>logistic_regression</code>, <code>random_forest</code>, <code>xgboost</code>, <code>lightgbm</code>.</td>
+</tr>
+<tr>
+<td><code>feature_types</code></td>
+<td>5 sets</td>
+<td>Any subset of <code>tfidf</code>, <code>topic_distribution</code>, <code>topic_bertopic</code>, <code>structured</code>, <code>embeddings</code>, <code>text_stats</code>, <code>combined</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>prediction.tuning</code></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td><code>true</code></td>
+<td>Set <code>false</code> for fast smoke runs.</td>
+</tr>
+<tr>
+<td><code>n_iter</code></td>
+<td><code>30</code></td>
+<td>Random param draws. Each draw is CV'd <code>cv_folds</code> times.</td>
+</tr>
+<tr>
+<td><code>cv_folds</code></td>
+<td><code>5</code></td>
+<td>Stratified k-fold.</td>
+</tr>
+<tr>
+<td><code>scoring</code></td>
+<td><code>"roc_auc"</code></td>
+<td>Any sklearn scorer string. <code>"average_precision"</code> is a good pick for very imbalanced data.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>prediction.feature_selection</code></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Applies to</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td><code>true</code></td>
+<td>all methods</td>
+<td>Global on/off.</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td><code>"univariate"</code></td>
+<td>all methods</td>
+<td>One of <code>variance</code>, <code>univariate</code>, <code>l1</code>, <code>rfe</code>, <code>shap</code>.</td>
+</tr>
+<tr>
+<td><code>apply_to</code></td>
+<td><code>["tfidf", "combined"]</code></td>
+<td>all methods</td>
+<td>Only these feature sets are reduced.</td>
+</tr>
+<tr>
+<td><code>k</code></td>
+<td><code>200</code></td>
+<td><code>univariate</code></td>
+<td>Top-k to keep.</td>
+</tr>
+<tr>
+<td><code>score_func</code></td>
+<td><code>"f_classif"</code></td>
+<td><code>univariate</code></td>
+<td><code>"chi2"</code>, <code>"f_classif"</code>, or <code>"mutual_info"</code>.</td>
+</tr>
+<tr>
+<td><code>threshold</code></td>
+<td>—</td>
+<td><code>variance</code></td>
+<td>Minimum variance to keep a feature.</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>—</td>
+<td><code>l1</code></td>
+<td>Inverse regularization strength for L1 LogReg.</td>
+</tr>
+<tr>
+<td><code>n_features_to_select</code></td>
+<td>—</td>
+<td><code>rfe</code></td>
+<td>Number of features RFE keeps.</td>
+</tr>
+<tr>
+<td><code>top_k</code></td>
+<td>—</td>
+<td><code>shap</code></td>
+<td>Top-k by mean |SHAP| to keep.</td>
+</tr>
+</tbody>
+</table>
+<h3><code>prediction.tfidf</code></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>max_features</code></td>
+<td><code>5000</code></td>
+<td>Vocabulary cap.</td>
+</tr>
+<tr>
+<td><code>ngram_range</code></td>
+<td><code>[1, 2]</code></td>
+<td>Unigrams + bigrams.</td>
+</tr>
+<tr>
+<td><code>min_df</code></td>
+<td><code>5</code></td>
+<td>Drop terms appearing in fewer than this many docs.</td>
+</tr>
+<tr>
+<td><code>max_df</code></td>
+<td><code>0.95</code></td>
+<td>Drop terms appearing in more than this fraction of docs.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.6 <code>fairness:</code></h2>
+<pre><code class="language-yaml">fairness:
+  protected_attributes:
+    - &quot;gender&quot;
+    - &quot;insurance&quot;
+    - &quot;age_group&quot;
+  metrics:
+    - &quot;demographic_parity_difference&quot;
+    - &quot;equalized_odds_difference&quot;
+    - &quot;false_positive_rate_difference&quot;
+    - &quot;false_negative_rate_difference&quot;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>protected_attributes</code></td>
+<td>Columns in the merged frame to audit. The column names must exist after <code>merge_dataset</code>.</td>
+</tr>
+<tr>
+<td><code>metrics</code></td>
+<td>Fairlearn disparity metrics to compute. Per-group metrics (accuracy, F1, FPR, FNR, selection rate) are always computed.</td>
+</tr>
+</tbody>
+</table>
+<p>To add a new attribute, make sure <code>data_loader.merge_dataset</code> produces a column with that name (e.g., derive <code>ethnicity_bucket</code>), then add it here — the audit loop picks it up automatically.</p>
+<hr />
+<h2>6.7 <code>visualization:</code></h2>
+<pre><code class="language-yaml">visualization:
+  figure_dpi:    300
+  figure_format: &quot;png&quot;
+  color_palette: &quot;Set2&quot;
+  save_path:     &quot;results/figures/&quot;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>figure_dpi</code></td>
+<td>Output resolution. 300 is print-quality.</td>
+</tr>
+<tr>
+<td><code>figure_format</code></td>
+<td><code>"png"</code> (default) or any matplotlib-supported extension.</td>
+</tr>
+<tr>
+<td><code>color_palette</code></td>
+<td>Seaborn palette name.</td>
+</tr>
+<tr>
+<td><code>save_path</code></td>
+<td>Where <code>_save_fig</code> writes PNGs. The dashboard reads from this exact path.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6.8 Environment variables</h2>
+<p>None. All configuration flows through <code>config.yaml</code>. The pipeline is deliberately env-free so notebook runs, CI, and the dashboard all see the same state.</p>
+</div>
+
+
+<div class="section-header">
+  <div class="section-label">Section 7</div>
+  <h1>Testing & Troubleshooting</h1>
+  <p>The project ships a single script, <code>tests/test_pipeline.py</code>, that runs every module end-to-end as a smoke test. It's deliberately plain — no <code>pytest</code> dependency — so it's cheap to run anywhere.</p>
+<hr />
+<h2>7.1 Running the tests</h2>
+<p>From the project root, with the venv activated:</p>
+<pre><code class="language-bash">python tests/test_pipeline.py
+</code></pre>
+<p>Each test prints <code>[PASS]</code> or <code>[FAIL]</code> with a short <code>&gt;&gt;</code> summary. A failing test prints a full traceback. The script exits with status <code>1</code> if any test failed.</p>
+<h3>Faster subsets</h3>
+<p>Tests are grouped by <code>SECTION</code> headers inside <code>main()</code>. The quickest way to run a single section is to comment out the others — the script is intentionally simple, and import time is the main cost.</p>
+<h3>GPU / heavy models</h3>
+<ul>
+<li>The embedding tests (<code>test_load_embedding_model</code>, <code>test_embed_*</code>) download Bio_ClinicalBERT weights (~440 MB) on first run and cache them under <code>~/.cache/huggingface/</code>. Subsequent runs are fast.</li>
+<li>BERTopic is only exercised indirectly via feature engineering; <code>test_pipeline.py</code> doesn't retrain BERTopic inside the test run.</li>
+</ul>
+<hr />
+<h2>7.2 What's covered</h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Tests</th>
+<th>Exercises</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong> — Synthetic data</td>
+<td><code>test_generate_patients</code>, <code>test_generate_admissions</code>, <code>test_generate_notes</code>, <code>test_run_generates_csv_files</code></td>
+<td><code>src/generate_synthetic_data.py</code></td>
+</tr>
+<tr>
+<td><strong>2</strong> — Data loader</td>
+<td><code>test_load_discharge_notes</code>, <code>test_load_admissions</code>, <code>test_load_patients</code>, <code>test_create_readmission_label</code>, <code>test_merge_dataset</code>, <code>test_load_all_convenience</code>, <code>test_get_data_summary</code></td>
+<td><code>src/data_loader.py</code></td>
+</tr>
+<tr>
+<td><strong>3</strong> — Preprocessing</td>
+<td><code>test_clean_clinical_text</code>, <code>test_extract_sections</code>, <code>test_remove_sections</code>, <code>test_tokenize_clinical</code>, <code>test_create_bigrams_trigrams</code>, <code>test_full_pipeline</code>, <code>test_bow_corpus</code>, <code>test_tfidf_matrix</code></td>
+<td><code>src/preprocess.py</code> + TF-IDF feature builder</td>
+</tr>
+<tr>
+<td><strong>4</strong> — Prediction</td>
+<td><code>test_split_data</code>, <code>test_get_model</code>, <code>test_train_and_evaluate</code>, <code>test_cross_validate</code>, <code>test_feature_importance</code>, <code>test_optimal_threshold</code>, <code>test_tune_hyperparameters</code>, <code>test_full_prediction_pipeline</code>, <code>test_prediction_pipeline_with_tuning</code></td>
+<td><code>src/predict.py</code></td>
+</tr>
+<tr>
+<td><strong>4.5</strong> — SHAP</td>
+<td><code>test_shap_global_importance</code>, <code>test_shap_patient_explanation</code>, <code>test_run_shap_analysis</code></td>
+<td><code>src/explainability.py</code></td>
+</tr>
+<tr>
+<td><strong>4.6</strong> — Feature selection</td>
+<td><code>test_variance_threshold_selection</code>, <code>test_univariate_selection</code>, <code>test_l1_selection</code>, <code>test_rfe_selection</code>, <code>test_shap_selection</code>, <code>test_select_features_dispatcher</code>, <code>test_pipeline_with_feature_selection</code></td>
+<td><code>src/feature_selection.py</code> + predict pipeline wiring</td>
+</tr>
+<tr>
+<td><strong>5</strong> — Fairness</td>
+<td><code>test_group_metrics</code>, <code>test_fairness_metrics</code>, <code>test_fairness_audit</code></td>
+<td><code>src/fairness.py</code></td>
+</tr>
+<tr>
+<td><strong>6</strong> — Embeddings</td>
+<td><code>test_load_embedding_model</code>, <code>test_embed_single_texts</code>, <code>test_embed_long_text_chunking</code>, <code>test_reduce_embeddings</code></td>
+<td><code>src/embeddings.py</code></td>
+</tr>
+<tr>
+<td><strong>7</strong> — Visualization</td>
+<td><code>test_plot_demographics</code>, <code>test_plot_note_length</code>, <code>test_plot_roc_pr_confusion</code>, <code>test_plot_fairness</code></td>
+<td><code>src/visualize.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>_build_small_feature_sets</code> helper inside <code>test_pipeline.py</code> assembles a miniature <code>feature_sets</code> dict so the prediction, SHAP, and feature-selection tests run in seconds without needing a full LDA/BERTopic fit.</p>
+<h3>What isn't covered yet</h3>
+<ul>
+<li><strong>BERTopic training</strong> — heavy to run as a unit test; covered indirectly via the notebook and by the 1-D probs fallback in <code>create_topic_features</code>.</li>
+<li><strong>Dashboard endpoints</strong> — exercised by hand (<code>curl http://localhost:8000/api/health</code>). An httpx-based FastAPI test client would slot in cleanly under a new <code>tests/test_dashboard.py</code> if you need it.</li>
+<li><strong>Exporter round-trip</strong> — no dedicated test yet; the notebook's dashboard export cell is the current smoke test.</li>
+</ul>
+<hr />
+<h2>7.3 Troubleshooting cheatsheet</h2>
+<h3>Import errors</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModuleNotFoundError: No module named 'src'</code></td>
+<td>Run from the project root, not from inside <code>tests/</code>.</td>
+</tr>
+<tr>
+<td><code>ModuleNotFoundError: No module named 'scispacy'</code></td>
+<td>scispaCy is optional. Call preprocessing with <code>use_scispacy=False</code> or install it per <code>docs/02-setup.md</code>.</td>
+</tr>
+<tr>
+<td><code>OSError: [E050] Can't find model 'en_core_web_sm'</code></td>
+<td><code>python -m spacy download en_core_web_sm</code></td>
+</tr>
+<tr>
+<td><code>LookupError: Resource ... not found</code> (NLTK)</td>
+<td>First call to <code>_ensure_nltk()</code> downloads these lazily. If you're offline, run <code>python -c "import nltk; [nltk.download(r) for r in ['stopwords','wordnet','punkt','punkt_tab','averaged_perceptron_tagger']]"</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3>Runtime errors</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause + fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IndexError: tuple index out of range</code> in <code>create_topic_features</code></td>
+<td>Old <code>feature_engineer.py</code> cached in kernel. Restart the Jupyter kernel; the current code handles 1-D BERTopic <code>probs</code>.</td>
+</tr>
+<tr>
+<td><code>ValueError: Found array with 0 sample(s)</code></td>
+<td>The <code>readmission_30day &gt;= 0</code> filter dropped everything. Check <code>create_readmission_label</code> — most synthetic runs should yield ~70-80% eligible.</td>
+</tr>
+<tr>
+<td>BERTopic raises <code>ValueError</code> on small datasets</td>
+<td><code>train_bertopic</code> already rescales <code>min_topic_size</code> and disables <code>nr_topics='auto'</code> for n&lt;500. If it still fails, pass <code>bertopic_model=None</code> to <code>build_feature_sets</code>.</td>
+</tr>
+<tr>
+<td><code>MemoryError</code> / OOM during XGBoost or RF training on Windows</td>
+<td>Models use <code>n_jobs=1</code> by default for this reason — don't override it. See commit <code>62922ed</code>.</td>
+</tr>
+<tr>
+<td><code>FileNotFoundError: data/synthetic_discharge.csv</code></td>
+<td>Run <code>generate_data()</code> (notebook Section 1) before loading.</td>
+</tr>
+<tr>
+<td>LightGBM warnings about <code>is_unbalance</code> + <code>scale_pos_weight</code></td>
+<td>Harmless; LightGBM picks one.</td>
+</tr>
+</tbody>
+</table>
+<h3>Dashboard issues</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dashboard starts but every page shows mock data</td>
+<td><code>results/exports/*.json</code> missing. Re-run the notebook through Section 8 (<code>exporter.export_dashboard_json(...)</code>).</td>
+</tr>
+<tr>
+<td><code>/api/predict</code> always returns a demo prediction</td>
+<td>No joblib found under <code>results/models/</code>. Re-run the prediction section — <code>run_prediction_pipeline</code> writes models via <code>save_models</code>.</td>
+</tr>
+<tr>
+<td><code>/api/explain</code> returns the mock list</td>
+<td>SHAP import failed (look at backend logs) or the best model's feature schema doesn't match the 12-column structured vector the live endpoint builds.</td>
+</tr>
+<tr>
+<td>Frontend loads but charts are empty</td>
+<td>Check the browser console — likely a 404 on <code>/api/figures/*.png</code> because the figures directory is empty. Re-run <code>generate_all_figures</code>.</td>
+</tr>
+<tr>
+<td>CORS blocked</td>
+<td>Serving the frontend through <code>uvicorn</code> (not <code>file://</code>) sidesteps this. The backend also sets <code>allow_origins=["*"]</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3>Notebook kernel hygiene</h3>
+<p>If you edit a module and the notebook doesn't pick it up:</p>
+<pre><code class="language-python">import importlib, src.feature_engineer
+importlib.reload(src.feature_engineer)
+from src.feature_engineer import build_feature_sets
+</code></pre>
+<p>Or restart the kernel entirely (Kernel → Restart). Stale imports caused the BERTopic <code>IndexError</code> you saw when we first wired in feature selection.</p>
+<hr />
+<h2>7.4 Continuous integration notes</h2>
+<p>No CI is configured in this repo yet. If you add GitHub Actions:</p>
+<ul>
+<li>Run <code>pip install -r requirements.txt</code> + <code>python -m spacy download en_core_web_sm</code> + NLTK downloads in a setup step.</li>
+<li>Skip the embedding tests on CI or cache <code>~/.cache/huggingface/</code> — the ClinicalBERT download is ~440 MB and will dominate the build time.</li>
+<li>Use <code>pytest tests/test_pipeline.py</code> with a small shim, or just invoke <code>python tests/test_pipeline.py</code> and fail the job on non-zero exit.</li>
+<li>The visualization tests write to <code>results/figures/</code> — either clean that up in a post-step or mark the directory as an artifact.</li>
+</ul>
+</div>
+
+
+<div id="footerContent" class="footer">
+  Clinical NLP &nbsp;&middot;&nbsp; Prashant Bhattarai &nbsp;&middot;&nbsp; v1.0
+  &nbsp;&middot;&nbsp; Page <pdf:pagenumber/> of <pdf:pagecount/>
+</div>
+
+</body>
+</html>
